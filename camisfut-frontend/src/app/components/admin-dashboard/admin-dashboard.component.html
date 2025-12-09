@@ -1,0 +1,548 @@
+<div class="admin-dashboard-container">
+
+  <div class="loading-overlay" *ngIf="loading">
+    <div class="spinner-admin"></div>
+    <p>Cargando productos...</p>
+  </div>
+
+  <!-- Mensajes de éxito/error -->
+  <div *ngIf="successMessage" class="alert alert-success alert-dismissible fade show m-3" role="alert">
+    <i class="bi bi-check-circle me-2"></i>
+    {{ successMessage }}
+    <button type="button" class="btn-close" (click)="successMessage = ''"></button>
+  </div>
+
+  <div *ngIf="error" class="alert alert-danger alert-dismissible fade show m-3" role="alert">
+    <i class="bi bi-exclamation-triangle me-2"></i>
+    {{ error }}
+    <button type="button" class="btn-close" (click)="error = ''"></button>
+  </div>
+
+  <!-- Header -->
+  <header class="admin-header">
+    <div class="container">
+      <div class="d-flex justify-content-between align-items-center">
+        <div>
+          <h1 class="admin-title">
+            <i class="bi bi-speedometer2 me-2"></i> Panel de Administración
+          </h1>
+          <p class="admin-subtitle">Gestiona tu catálogo de {{estadisticas.total}} camisetas</p>
+        </div>
+        <div class="d-flex gap-2">
+          <button class="btn btn-outline-light btn-sm" (click)="refrescarProductos()">
+            <i class="bi bi-arrow-clockwise"></i> Actualizar
+          </button>
+          <button class="btn btn-outline-light btn-sm" (click)="toggleHerramientas()">
+            <i class="bi bi-tools"></i> Herramientas
+          </button>
+          <button class="btn btn-danger btn-sm" (click)="logout()">
+            <i class="bi bi-box-arrow-right"></i> Salir
+          </button>
+        </div>
+      </div>
+    </div>
+  </header>
+
+  <!-- Herramientas avanzadas -->
+  <div *ngIf="mostrarHerramientas" class="admin-tools py-3 bg-dark text-white">
+    <div class="container">
+      <h5 class="mb-3"><i class="bi bi-tools me-2"></i>Herramientas Avanzadas</h5>
+      <div class="row g-3">
+        <div class="col-md-8">
+          <textarea class="form-control font-monospace"
+                    rows="4"
+                    [(ngModel)]="jsonExport"
+                    placeholder='Pega aquí el JSON de modificaciones...'></textarea>
+        </div>
+        <div class="col-md-4">
+          <div class="d-flex flex-column gap-2">
+            <button class="btn btn-outline-light" (click)="exportarModificaciones()">
+              <i class="bi bi-download me-2"></i> Exportar
+            </button>
+            <button class="btn btn-outline-light" (click)="importarModificaciones()">
+              <i class="bi bi-upload me-2"></i> Importar
+            </button>
+            <button class="btn btn-outline-warning" (click)="sincronizar()">
+              <i class="bi bi-cloud-arrow-up me-2"></i> Sincronizar
+            </button>
+            <button class="btn btn-outline-danger" (click)="limpiarModificaciones()">
+              <i class="bi bi-trash me-2"></i> Limpiar Modificaciones
+            </button>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <!-- Estadísticas -->
+  <section class="admin-stats py-4">
+    <div class="container">
+      <div class="row g-3">
+        <div class="col-md-2">
+          <div class="stat-card stat-total">
+            <div class="stat-icon">
+              <i class="bi bi-box-seam"></i>
+            </div>
+            <div class="stat-info">
+              <h3>{{ estadisticas.total }}</h3>
+              <p>Total Productos</p>
+            </div>
+          </div>
+        </div>
+
+        <div class="col-md-2">
+          <div class="stat-card stat-nuevas">
+            <div class="stat-icon">
+              <i class="bi bi-star"></i>
+            </div>
+            <div class="stat-info">
+              <h3>{{ estadisticas.nuevas }}</h3>
+              <p>Nuevas</p>
+            </div>
+          </div>
+        </div>
+
+        <div class="col-md-2">
+          <div class="stat-card stat-vintage">
+            <div class="stat-icon">
+              <i class="bi bi-clock-history"></i>
+            </div>
+            <div class="stat-info">
+              <h3>{{ estadisticas.vintage }}</h3>
+              <p>Vintage</p>
+            </div>
+          </div>
+        </div>
+
+        <div class="col-md-2">
+          <div class="stat-card stat-fan">
+            <div class="stat-icon">
+              <i class="bi bi-people"></i>
+            </div>
+            <div class="stat-info">
+              <h3>{{ estadisticas.fanVersion }}</h3>
+              <p>Fan Version</p>
+            </div>
+          </div>
+        </div>
+
+        <div class="col-md-2">
+          <div class="stat-card stat-sinstock">
+            <div class="stat-icon">
+              <i class="bi bi-exclamation-triangle"></i>
+            </div>
+            <div class="stat-info">
+              <h3>{{ estadisticas.sinStock }}</h3>
+              <p>Sin Stock</p>
+            </div>
+          </div>
+        </div>
+
+        <div class="col-md-2">
+          <div class="stat-card stat-modificados">
+            <div class="stat-icon">
+              <i class="bi bi-pencil-square"></i>
+            </div>
+            <div class="stat-info">
+              <h3>{{ estadisticas.modificados }}</h3>
+              <p>Modificados</p>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <!-- Barra de acciones -->
+  <section class="admin-actions py-3 bg-light">
+    <div class="container">
+      <div class="d-flex justify-content-between align-items-center">
+        <button class="btn btn-primary" (click)="abrirCrearProducto()">
+          <i class="bi bi-plus-circle me-2"></i> Nuevo Producto
+        </button>
+        <div class="text-end">
+          <small class="text-muted">
+            <i class="bi bi-info-circle me-1"></i>
+            Los cambios se aplicarán inmediatamente al catálogo público
+          </small>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <!-- Filtros -->
+  <section class="admin-filters py-3 bg-white">
+    <div class="container">
+      <div class="row g-3">
+        <div class="col-md-5">
+          <div class="input-group">
+            <span class="input-group-text">
+              <i class="bi bi-search"></i>
+            </span>
+            <input type="text"
+                   class="form-control"
+                   placeholder="Buscar por nombre, club o descripción..."
+                   [(ngModel)]="terminoBusqueda"
+                   (ngModelChange)="filtrarProductos()">
+          </div>
+        </div>
+
+        <div class="col-md-2">
+          <select class="form-select" [(ngModel)]="filtroTipo" (ngModelChange)="filtrarProductos()">
+            <option value="todos">Todos los tipos</option>
+            <option value="nuevas">Nuevas</option>
+            <option value="vintage">Vintage</option>
+            <option value="fanVersion">Fan Version</option>
+          </select>
+        </div>
+
+        <div class="col-md-2">
+          <select class="form-select" [(ngModel)]="filtroCategoria" (ngModelChange)="filtrarProductos()">
+            <option value="todos">Todas las categorías</option>
+            <option value="clubes">Clubes</option>
+            <option value="selecciones">Selecciones</option>
+          </select>
+        </div>
+
+        <div class="col-md-2">
+          <select class="form-select" [(ngModel)]="filtroStock" (ngModelChange)="filtrarProductos()">
+            <option value="todos">Todo el stock</option>
+            <option value="conStock">Con stock</option>
+            <option value="sinStock">Sin stock</option>
+          </select>
+        </div>
+
+        <div class="col-md-1">
+          <button class="btn btn-outline-secondary w-100" (click)="filtrarProductos()">
+            <i class="bi bi-funnel"></i>
+          </button>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <!-- Tabla de productos -->
+  <main class="admin-main py-4">
+    <div class="container">
+      <div class="d-flex justify-content-between align-items-center mb-4">
+        <h2>
+          <i class="bi bi-box-seam me-2"></i>
+          Productos ({{ productosFiltrados.length }} de {{ productos.length }})
+        </h2>
+        <div class="text-muted small">
+          <i class="bi bi-lightbulb me-1"></i>
+          Haz clic en <i class="bi bi-pencil text-primary"></i> para editar
+        </div>
+      </div>
+
+      <!-- Sin productos -->
+      <div *ngIf="productosFiltrados.length === 0 && !loading" class="text-center py-5">
+        <i class="bi bi-search display-1 text-muted"></i>
+        <h4 class="mt-3">No hay productos que coincidan</h4>
+        <p class="text-muted mb-4">Intenta con otros filtros o crea un nuevo producto</p>
+        <button class="btn btn-primary" (click)="abrirCrearProducto()">
+          <i class="bi bi-plus-circle me-2"></i> Crear primer producto
+        </button>
+      </div>
+
+      <!-- Tabla -->
+      <div *ngIf="productosFiltrados.length > 0" class="table-responsive">
+        <table class="table table-hover">
+          <thead class="table-dark">
+          <tr>
+            <th>ID</th>
+            <th>Imagen</th>
+            <th>Producto</th>
+            <th>Club / Liga</th>
+            <th>Tipo</th>
+            <th>Precio</th>
+            <th>Stock</th>
+            <th>Estado</th>
+            <th class="text-center">Acciones</th>
+          </tr>
+          </thead>
+          <tbody>
+          <tr *ngFor="let producto of productosFiltrados"
+              [class.table-danger]="estaEliminado(producto)"
+              [class.table-warning]="estaModificado(producto) && !estaEliminado(producto)">
+            <td class="fw-bold">{{ producto.id }}</td>
+            <td>
+              <img [src]="'img/' + (producto.imagenes[0] || 'default.jpg')"
+                   class="product-thumb"
+                   [alt]="producto.nombre"
+                   (error)="producto.imagenes[0] = 'default.jpg'">
+            </td>
+            <td>
+              <div class="d-flex flex-column">
+                <strong>{{ producto.nombre }}</strong>
+                <small class="text-muted">{{ producto.descripcion?.substring(0, 60) || 'Sin descripción' }}...</small>
+              </div>
+            </td>
+            <td>
+              <div class="d-flex flex-column">
+                <span class="fw-medium">{{ producto.club }}</span>
+                <small class="text-muted" *ngIf="producto.liga">
+                  {{ producto.liga === 'laLiga' ? 'La Liga' :
+                  producto.liga === 'premier' ? 'Premier League' :
+                    producto.liga === 'serieA' ? 'Serie A' :
+                      producto.liga === 'bundesliga' ? 'Bundesliga' :
+                        producto.liga === 'ligue1' ? 'Ligue 1' : producto.liga }}
+                </small>
+              </div>
+            </td>
+            <td>
+                <span class="badge"
+                      [ngClass]="{
+                        'bg-primary': producto.tipo === 'nuevas',
+                        'bg-success': producto.tipo === 'vintage',
+                        'bg-danger': producto.tipo === 'fanVersion'
+                      }">
+                  {{ producto.tipo }}
+                </span>
+            </td>
+            <td>
+              <strong class="text-success">{{ producto.precio | currency:'EUR':'symbol':'1.2-2' }}</strong>
+            </td>
+            <td>
+                <span [ngClass]="{
+                  'badge bg-success': producto.stock > 10,
+                  'badge bg-warning text-dark': producto.stock > 0 && producto.stock <= 10,
+                  'badge bg-danger': producto.stock === 0
+                }">
+                  {{ producto.stock }} unidades
+                </span>
+            </td>
+            <td>
+                <span class="badge" [ngClass]="getBadgeClass(producto)">
+                  {{ getModificadoBadge(producto) }}
+                </span>
+            </td>
+            <td>
+              <div class="d-flex justify-content-center gap-2">
+                <button class="btn btn-outline-primary btn-sm"
+                        (click)="abrirEditarProducto(producto)"
+                        *ngIf="!estaEliminado(producto)">
+                  <i class="bi bi-pencil"></i>
+                </button>
+
+                <button class="btn btn-outline-danger btn-sm"
+                        (click)="eliminarProducto(producto)"
+                        *ngIf="!estaEliminado(producto)">
+                  <i class="bi bi-trash"></i>
+                </button>
+
+                <button class="btn btn-outline-success btn-sm"
+                        (click)="restaurarProducto(producto)"
+                        *ngIf="estaEliminado(producto)">
+                  <i class="bi bi-arrow-counterclockwise"></i>
+                </button>
+
+                <button class="btn btn-outline-secondary btn-sm"
+                        [disabled]="true"
+                        title="Ver en catálogo público">
+                  <i class="bi bi-eye"></i>
+                </button>
+              </div>
+            </td>
+          </tr>
+          </tbody>
+        </table>
+      </div>
+    </div>
+  </main>
+
+  <!-- Modal para crear/editar producto -->
+  <div class="admin-modal" *ngIf="mostrarModal">
+    <div class="modal-content">
+      <div class="modal-header">
+        <h2>
+          <i class="bi bi-box me-2"></i>
+          {{ modoEdicion === 'crear' ? 'Nuevo Producto' : 'Editar Producto' }}
+        </h2>
+        <button type="button" class="btn-close" (click)="cerrarModal()"></button>
+      </div>
+
+      <form (ngSubmit)="guardarProducto()">
+        <div class="modal-body">
+          <!-- Mensajes de error en modal -->
+          <div *ngIf="error" class="alert alert-danger">
+            <i class="bi bi-exclamation-triangle me-2"></i>
+            {{ error }}
+          </div>
+
+          <div class="row g-3">
+            <!-- Nombre -->
+            <div class="col-md-12">
+              <label class="form-label">Nombre del producto *</label>
+              <input type="text"
+                     class="form-control"
+                     [(ngModel)]="productoForm.nombre"
+                     name="nombre"
+                     placeholder="Ej: Real Madrid 2024/25 Local"
+                     required>
+              <div class="form-text">Nombre completo del producto</div>
+            </div>
+
+            <!-- Club -->
+            <div class="col-md-6">
+              <label class="form-label">Club *</label>
+              <input type="text"
+                     class="form-control"
+                     [(ngModel)]="productoForm.club"
+                     name="club"
+                     placeholder="Ej: Real Madrid, Barcelona"
+                     required>
+            </div>
+
+            <!-- Precio -->
+            <div class="col-md-6">
+              <label class="form-label">Precio (€) *</label>
+              <input type="number"
+                     class="form-control"
+                     [(ngModel)]="productoForm.precio"
+                     name="precio"
+                     step="0.01"
+                     min="0"
+                     max="1000"
+                     placeholder="89.99"
+                     required>
+            </div>
+
+            <!-- Tipo -->
+            <div class="col-md-4">
+              <label class="form-label">Tipo *</label>
+              <select class="form-select" [(ngModel)]="productoForm.tipo" name="tipo">
+                <option value="nuevas">Nuevas</option>
+                <option value="vintage">Vintage</option>
+                <option value="fanVersion">Fan Version</option>
+              </select>
+            </div>
+
+            <!-- Categoría -->
+            <div class="col-md-4">
+              <label class="form-label">Categoría *</label>
+              <select class="form-select" [(ngModel)]="productoForm.categoria" name="categoria">
+                <option value="clubes">Clubes</option>
+                <option value="selecciones">Selecciones</option>
+              </select>
+            </div>
+
+            <!-- Liga -->
+            <div class="col-md-4">
+              <label class="form-label">Liga</label>
+              <select class="form-select" [(ngModel)]="productoForm.liga" name="liga">
+                <option value="">Sin liga</option>
+                <option value="laLiga">La Liga</option>
+                <option value="premier">Premier League</option>
+                <option value="serieA">Serie A</option>
+                <option value="bundesliga">Bundesliga</option>
+                <option value="ligue1">Ligue 1</option>
+              </select>
+            </div>
+
+            <!-- Stock -->
+            <div class="col-md-6">
+              <label class="form-label">Stock *</label>
+              <input type="number"
+                     class="form-control"
+                     [(ngModel)]="productoForm.stock"
+                     name="stock"
+                     min="0"
+                     placeholder="10"
+                     required>
+              <div class="form-text">Cantidad disponible</div>
+            </div>
+
+            <!-- Retro -->
+            <div class="col-md-6">
+              <label class="form-label">Estado</label>
+              <div class="form-check mt-2">
+                <input class="form-check-input"
+                       type="checkbox"
+                       [(ngModel)]="productoForm.retro"
+                       name="retro"
+                       id="retroCheck">
+                <label class="form-check-label" for="retroCheck">
+                  ¿Es retro/vintage?
+                </label>
+              </div>
+            </div>
+
+            <!-- Descripción -->
+            <div class="col-md-12">
+              <label class="form-label">Descripción</label>
+              <textarea class="form-control"
+                        rows="3"
+                        [(ngModel)]="productoForm.descripcion"
+                        name="descripcion"
+                        placeholder="Describe el producto..."></textarea>
+            </div>
+
+            <!-- Imágenes -->
+            <div class="col-md-12">
+              <label class="form-label">Imágenes</label>
+              <div *ngFor="let imagen of productoForm.imagenes; let i = index" class="input-group mb-2">
+                <input type="text"
+                       class="form-control"
+                       [(ngModel)]="productoForm.imagenes[i]"
+                       [name]="'imagen-' + i"
+                       placeholder="Nombre del archivo (ej: camiseta.jpg)">
+                <button type="button"
+                        class="btn btn-outline-danger"
+                        (click)="removerImagen(i)"
+                        *ngIf="productoForm.imagenes.length > 1"
+                        title="Eliminar imagen">
+                  <i class="bi bi-trash"></i>
+                </button>
+              </div>
+              <button type="button" class="btn btn-outline-secondary btn-sm" (click)="agregarImagen()">
+                <i class="bi bi-plus"></i> Añadir imagen
+              </button>
+              <div class="form-text">Usa nombres de archivos existentes en la carpeta /img</div>
+            </div>
+
+            <!-- Tallas -->
+            <div class="col-md-12">
+              <label class="form-label">Tallas Disponibles</label>
+              <div class="d-flex flex-wrap gap-2 mb-3">
+                <span *ngFor="let talla of productoForm.tallasDisponibles"
+                      class="badge bg-primary d-flex align-items-center gap-1">
+                  {{ talla }}
+                  <button type="button"
+                          class="btn-close btn-close-white btn-sm"
+                          (click)="removerTalla(talla)"
+                          *ngIf="productoForm.tallasDisponibles.length > 1"></button>
+                </span>
+              </div>
+
+              <div class="btn-group btn-group-sm">
+                <button type="button" class="btn btn-outline-secondary" (click)="agregarTalla('XS')">XS</button>
+                <button type="button" class="btn btn-outline-secondary" (click)="agregarTalla('S')">S</button>
+                <button type="button" class="btn btn-outline-secondary" (click)="agregarTalla('M')">M</button>
+                <button type="button" class="btn btn-outline-secondary" (click)="agregarTalla('L')">L</button>
+                <button type="button" class="btn btn-outline-secondary" (click)="agregarTalla('XL')">XL</button>
+                <button type="button" class="btn btn-outline-secondary" (click)="agregarTalla('XXL')">XXL</button>
+              </div>
+              <div class="form-text">Selecciona las tallas disponibles para este producto</div>
+            </div>
+          </div>
+        </div>
+
+        <div class="modal-footer">
+          <button type="button" class="btn btn-secondary" (click)="cerrarModal()">
+            <i class="bi bi-x-lg me-1"></i> Cancelar
+          </button>
+          <button type="submit" class="btn btn-primary" [disabled]="loading">
+            <span *ngIf="!loading">
+              <i class="bi bi-check-lg me-1"></i>
+              {{ modoEdicion === 'crear' ? 'Crear Producto' : 'Guardar Cambios' }}
+            </span>
+            <span *ngIf="loading">
+              <i class="bi bi-arrow-repeat spin me-1"></i> Guardando...
+            </span>
+          </button>
+        </div>
+      </form>
+    </div>
+  </div>
+</div>

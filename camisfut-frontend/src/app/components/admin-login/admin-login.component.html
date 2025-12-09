@@ -1,0 +1,83 @@
+<div class="admin-login-container">
+  <div class="admin-login-card">
+    <!-- Logo -->
+    <div class="admin-logo">
+      <h1><i class="bi bi-shield-lock"></i> ADMIN CAMISFUT</h1>
+      <p class="text-muted">Área restringida de administración</p>
+    </div>
+
+    <!-- Formulario -->
+    <form (ngSubmit)="onSubmit()" class="admin-form">
+      <!-- Mensaje de error -->
+      <div *ngIf="error" class="alert alert-danger">
+        <i class="bi bi-exclamation-triangle me-2"></i>
+        {{ error }}
+      </div>
+
+      <!-- Email -->
+      <div class="mb-3">
+        <label class="form-label">
+          <i class="bi bi-envelope me-1"></i> Email de administrador
+        </label>
+        <input type="email"
+               class="form-control"
+               placeholder="admin@camisfut.com"
+               [(ngModel)]="adminData.email"
+               name="email"
+               required>
+        <div class="form-text">
+          Usa: <code>admin&#64;camisfut.com</code>
+        </div>
+      </div>
+
+      <!-- Contraseña -->
+      <div class="mb-4">
+        <label class="form-label">
+          <i class="bi bi-key me-1"></i> Contraseña
+        </label>
+        <input type="password"
+               class="form-control"
+               placeholder="********"
+               [(ngModel)]="adminData.password"
+               name="password"
+               required>
+        <div class="form-text">
+          Usa: <code>admin123</code>
+        </div>
+      </div>
+
+      <!-- Botón submit -->
+      <button type="submit"
+              class="btn btn-admin w-100"
+              [disabled]="loading">
+        <span *ngIf="!loading">
+          <i class="bi bi-box-arrow-in-right me-2"></i> Acceder al Panel
+        </span>
+        <span *ngIf="loading">
+          <i class="bi bi-arrow-repeat spin me-2"></i> Verificando...
+        </span>
+      </button>
+
+      <!-- Enlace volver -->
+      <div class="text-center mt-4">
+        <a href="javascript:void(0)"
+           (click)="irAlInicio()"
+           class="text-decoration-none">
+          <i class="bi bi-arrow-left me-1"></i> Volver al sitio público
+        </a>
+      </div>
+
+      <!-- Instrucciones -->
+      <div class="card mt-4 border-info">
+        <div class="card-body p-3">
+          <small class="text-muted">
+            <i class="bi bi-info-circle me-1"></i>
+            <strong>Credenciales de prueba:</strong><br>
+            Email: <code>admin&#64;camisfut.com</code><br>
+            Contraseña: <code>admin123</code>
+          </small>
+        </div>
+      </div>
+    </form>
+  </div>
+</div>

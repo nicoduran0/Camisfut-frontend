@@ -1,0 +1,220 @@
+:root {
+  --color-primario: #8A2BE2;
+  --color-primario-hover: #7A22C2;
+}
+
+body {
+  font-family: 'Inter', sans-serif;
+  background-color: #f8f9fa;
+}
+
+h1, h2, h3, h4, h5 {
+  font-family: 'Bebas Neue', cursive;
+  text-transform: uppercase;
+}
+
+.seccion-hero-opiniones {
+  background-color: #f8f9fa;
+  color: #333;
+  padding: 4rem 0;
+  text-align: center;
+  border-bottom: 1px solid #e9ecef;
+}
+
+.titulo-principal {
+  font-size: 3.5rem;
+  font-weight: 900;
+  color: #212529;
+  letter-spacing: 2px;
+  margin-bottom: 15px;
+}
+
+.subtitulo-principal {
+  font-size: 1.3rem;
+  color: #6c757d;
+  font-weight: 400;
+}
+
+.tarjeta-testimonio {
+  background: white;
+  border: none;
+  border-radius: 15px;
+  padding: 25px;
+  height: 100%;
+  display: flex;
+  flex-direction: column;
+  justify-content: space-between;
+  box-shadow: 0 4px 15px rgba(0,0,0,0.08);
+  transition: all 0.3s ease;
+  border-left: 4px solid var(--color-primario);
+}
+
+.tarjeta-testimonio:hover {
+  transform: translateY(-5px);
+  box-shadow: 0 8px 25px rgba(0,0,0,0.15);
+}
+
+.estrellas {
+  color: #FFD700;
+  font-size: 1.3rem;
+  margin-bottom: 15px;
+  letter-spacing: 2px;
+}
+
+.tarjeta-testimonio p {
+  color: #555;
+  line-height: 1.6;
+  font-size: 1rem;
+  margin-bottom: 0;
+  flex-grow: 1;
+}
+
+.nombre-cliente {
+  font-weight: bold;
+  margin-top: 20px;
+  color: #333;
+  font-size: 1.1rem;
+}
+
+.fecha-cliente {
+  font-size: 0.85rem;
+  color: #888;
+  margin-top: 5px;
+}
+
+.btn-contorno-primario {
+  border: 2px solid var(--color-primario);
+  color: var(--color-primario);
+  background: transparent;
+  font-weight: bold;
+  padding: 12px 30px;
+  border-radius: 25px;
+  transition: all 0.3s ease;
+  text-decoration: none;
+  display: inline-block;
+}
+
+.btn-contorno-primario:hover {
+  background-color: var(--color-primario);
+  color: white;
+  transform: translateY(-2px);
+  box-shadow: 0 4px 12px rgba(138, 43, 226, 0.3);
+}
+
+.barra-navegacion {
+  padding: 0.75rem 1rem;
+  min-height: 70px;
+}
+
+.logo-navegacion img {
+  height: 70px;
+  width: auto;
+  margin-right: 15px;
+}
+
+.btn-inicio-sesion {
+  background-color: white;
+  border: 2px solid var(--color-primario);
+  color: var(--color-primario);
+  font-weight: bold;
+  padding: 8px 15px;
+  border-radius: 20px;
+  font-size: 0.9rem;
+  transition: all 0.2s;
+}
+
+.btn-inicio-sesion:hover {
+  background-color: #f8f9fa;
+  border-color: var(--color-primario-hover);
+  color: var(--color-primario-hover);
+}
+
+.pie-pagina {
+  background-color: #121212;
+  color: white;
+  padding: 40px 0;
+}
+
+.titulo-pie {
+  font-family: 'Bebas Neue', cursive;
+  font-size: 1.2rem;
+  font-weight: 900;
+  margin-bottom: 15px;
+  color: white;
+  text-shadow: -1px -1px 0 #000, 1px -1px 0 #000, -1px 1px 0 #000, 1px 1px 0 #000;
+}
+
+.enlace-pie {
+  color: #ccc;
+  text-decoration: none;
+}
+
+.enlace-pie:hover {
+  color: #fff;
+  text-decoration: underline;
+}
+
+.iconos-redes a {
+  color: #ccc;
+  font-size: 1.5rem;
+  margin-right: 15px;
+  transition: color 0.2s;
+}
+
+.iconos-redes a:hover {
+  color: #fff;
+}
+
+/* Responsive */
+@media (max-width: 768px) {
+  .titulo-principal {
+    font-size: 2.5rem;
+  }
+
+  .subtitulo-principal {
+    font-size: 1.1rem;
+  }
+
+  .seccion-hero-opiniones {
+    padding: 3rem 1rem;
+  }
+
+  .tarjeta-testimonio {
+    padding: 20px;
+  }
+}
+
+.d-flex.align-items-center {
+  gap: 25px;
+}
+
+.btn-inicio-sesion {
+  margin-right: 10px;
+}
+
+.dropdown-toggle::after {
+  display: none;
+}
+
+.dropdown-menu {
+  border: none;
+  box-shadow: 0 4px 12px rgba(0,0,0,0.1);
+  border-radius: 10px;
+  padding: 10px;
+}
+
+.dropdown-item {
+  border-radius: 5px;
+  padding: 8px 12px;
+  margin: 2px 0;
+  cursor: pointer;
+}
+
+.dropdown-item:hover {
+  background-color: #f8f9fa;
+}
+
+.dropdown-item-text {
+  font-weight: bold;
+  color: var(--color-primario);
+}

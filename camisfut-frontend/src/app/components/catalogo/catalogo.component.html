@@ -1,0 +1,414 @@
+<!-- Navbar -->
+<nav class="navbar navbar-expand-lg navbar-light bg-white border-bottom barra-navegacion">
+  <div class="container d-flex align-items-center">
+    <a class="navbar-brand logo-navegacion" routerLink="/inicio">
+      <img src="img/logo_camis.png" alt="CamisFut">
+    </a>
+    <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#navbarNav">
+      <span class="navbar-toggler-icon"></span>
+    </button>
+    <div class="collapse navbar-collapse" id="navbarNav">
+      <ul class="navbar-nav me-auto">
+        <li class="nav-item"><a class="nav-link" routerLink="/inicio">Inicio</a></li>
+        <li class="nav-item"><a class="nav-link active" routerLink="/catalogo">Catálogo</a></li>
+        <li class="nav-item"><a class="nav-link" routerLink="/colecciones">Colecciones</a></li>
+        <li class="nav-item"><a class="nav-link" routerLink="/nosotros">Nosotros</a></li>
+      </ul>
+      <div class="d-flex align-items-center">
+        <!-- Mostrar icono de perfil si está logueado -->
+        <div *ngIf="isLoggedIn" class="dropdown">
+          <button class="btn btn-outline-secondary d-flex align-items-center justify-content-center dropdown-toggle"
+                  style="height: 40px; width: 40px;"
+                  type="button"
+                  data-bs-toggle="dropdown"
+                  aria-expanded="false">
+            <i class="bi bi-person"></i>
+          </button>
+          <ul class="dropdown-menu dropdown-menu-end">
+            <li><span class="dropdown-item-text">Hola, {{userName}}</span></li>
+            <li><hr class="dropdown-divider"></li>
+            <li><a class="dropdown-item" routerLink="/mis-pedidos"><i class="bi bi-bag me-2"></i>Mis Pedidos</a></li>
+            <li>
+              <button class="dropdown-item text-danger" (click)="logout()">
+                <i class="bi bi-box-arrow-right me-2"></i>Cerrar Sesión
+              </button>
+            </li>
+          </ul>
+        </div>
+
+        <!-- Mostrar botón de inicio sesión si NO está logueado -->
+        <a *ngIf="!isLoggedIn" routerLink="/inicio-sesion" class="btn btn-inicio-sesion me-3">Iniciar Sesión</a>
+
+        <!-- Carrito -->
+        <button class="btn btn-outline-secondary d-flex align-items-center justify-content-center position-relative"
+                style="height: 40px; width: 40px;"
+                routerLink="/carrito">
+          <i class="bi bi-cart"></i>
+          <!-- BADGE CON CANTIDAD DE ITEMS -->
+          <span *ngIf="totalItemsCarrito > 0"
+                class="position-absolute top-0 start-100 translate-middle badge rounded-pill bg-danger"
+                style="font-size: 0.6rem;">
+            {{ totalItemsCarrito }}
+          </span>
+        </button>
+      </div>
+    </div>
+  </div>
+</nav>
+
+<!-- Notificación flotante -->
+<div *ngIf="mostrarNotificacion" class="notificacion-flotante">
+  <div class="notificacion-contenido {{notificacionTipo}}">
+    <div class="d-flex align-items-center p-3">
+      <div class="notificacion-icono {{notificacionTipo}}">
+        <i *ngIf="notificacionTipo === 'success'" class="bi bi-check-circle"></i>
+        <i *ngIf="notificacionTipo === 'error'" class="bi bi-exclamation-circle"></i>
+        <i *ngIf="notificacionTipo === 'info'" class="bi bi-info-circle"></i>
+      </div>
+      <div class="flex-grow-1">
+        <p class="mb-0">{{mensajeNotificacion}}</p>
+      </div>
+    </div>
+    <div class="notificacion-progreso"></div>
+  </div>
+</div>
+
+<main class="container my-4">
+  <div class="row mb-4">
+    <div class="col-12">
+      <h1 class="titulo-principal">CATÁLOGO COMPLETO</h1>
+      <p class="subtitulo-principal">Explora nuestra colección al completo de camisetas</p>
+      <!-- BUSCADOR -->
+      <div class="row justify-content-center mb-4">
+        <div class="col-md-6">
+          <div class="buscador-catalogo">
+            <input type="text"
+                   class="form-control"
+                   placeholder="Buscar camisetas por nombre, club o descripción..."
+                   (input)="onBuscarChange($event)"
+                   [value]="terminoBusqueda">
+            <i class="bi bi-search icono-buscar"></i>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <!-- ========== LOADING STATE ========== -->
+  <div *ngIf="loading" class="text-center py-5">
+    <div class="spinner-border text-primary" role="status" style="width: 3rem; height: 3rem;">
+      <span class="visually-hidden">Cargando...</span>
+    </div>
+    <p class="mt-3 fs-5">Cargando catálogo desde la base de datos...</p>
+    <p class="text-muted">Por favor, espera un momento</p>
+  </div>
+
+  <!-- ========== ERROR STATE ========== -->
+  <div *ngIf="error && !loading" class="alert alert-danger alert-dismissible fade show" role="alert">
+    <div class="d-flex align-items-center">
+      <i class="bi bi-exclamation-triangle me-2 fs-4"></i>
+      <div class="flex-grow-1">
+        <strong>Error al cargar el catálogo:</strong> {{ error }}
+        <div class="mt-2 small">
+          <i class="bi bi-info-circle me-1"></i>
+          Asegúrate de que el servidor backend esté en funcionamiento.
+        </div>
+      </div>
+    </div>
+    <div class="mt-3">
+      <button type="button" class="btn btn-sm btn-outline-danger" (click)="cargarProductosCombinados()">
+        <i class="bi bi-arrow-clockwise me-1"></i> Reintentar conexión
+      </button>
+      <button type="button" class="btn btn-sm btn-outline-secondary ms-2" data-bs-dismiss="alert">
+        <i class="bi bi-x-lg me-1"></i> Cerrar
+      </button>
+    </div>
+  </div>
+
+  <!-- ========== CONTENIDO PRINCIPAL ========== -->
+  <div *ngIf="!loading && !error">
+    <div class="row">
+      <!-- Filtros -->
+      <div class="col-lg-3 mb-4">
+        <div class="tarjeta-filtro">
+          <h5 class="titulo-filtro">
+            <i class="bi bi-funnel me-2"></i>Filtros
+          </h5>
+
+          <!-- TIPO -->
+          <h6 class="titulo-filtro mt-3">Tipo</h6>
+          <div class="form-check casilla-filtro">
+            <input class="form-check-input" type="checkbox" id="nuevas"
+                   [checked]="filtrosActivos.tipo.nuevas"
+                   (change)="onFiltroChange('tipo', 'nuevas', $event)">
+            <label class="form-check-label" for="nuevas">
+              Nuevas
+            </label>
+          </div>
+          <div class="form-check casilla-filtro">
+            <input class="form-check-input" type="checkbox" id="vintage"
+                   [checked]="filtrosActivos.tipo.vintage"
+                   (change)="onFiltroChange('tipo', 'vintage', $event)">
+            <label class="form-check-label" for="vintage">
+              Vintage/Retro
+            </label>
+          </div>
+          <div class="form-check casilla-filtro">
+            <input class="form-check-input" type="checkbox" id="fanVersion"
+                   [checked]="filtrosActivos.tipo.fanVersion"
+                   (change)="onFiltroChange('tipo', 'fanVersion', $event)">
+            <label class="form-check-label" for="fanVersion">
+              Fan Version
+            </label>
+          </div>
+
+          <!-- LIGA -->
+          <h6 class="titulo-filtro mt-4">Liga</h6>
+          <div class="form-check casilla-filtro">
+            <input class="form-check-input" type="checkbox" id="laLiga"
+                   [checked]="filtrosActivos.liga.laLiga"
+                   (change)="onFiltroChange('liga', 'laLiga', $event)">
+            <label class="form-check-label" for="laLiga">
+              La Liga
+            </label>
+          </div>
+          <div class="form-check casilla-filtro">
+            <input class="form-check-input" type="checkbox" id="premier"
+                   [checked]="filtrosActivos.liga.premier"
+                   (change)="onFiltroChange('liga', 'premier', $event)">
+            <label class="form-check-label" for="premier">
+              Premier League
+            </label>
+          </div>
+          <div class="form-check casilla-filtro">
+            <input class="form-check-input" type="checkbox" id="serieA"
+                   [checked]="filtrosActivos.liga.serieA"
+                   (change)="onFiltroChange('liga', 'serieA', $event)">
+            <label class="form-check-label" for="serieA">
+              Serie A
+            </label>
+          </div>
+          <div class="form-check casilla-filtro">
+            <input class="form-check-input" type="checkbox" id="bundesliga"
+                   [checked]="filtrosActivos.liga.bundesliga"
+                   (change)="onFiltroChange('liga', 'bundesliga', $event)">
+            <label class="form-check-label" for="bundesliga">
+              Bundesliga
+            </label>
+          </div>
+          <div class="form-check casilla-filtro">
+            <input class="form-check-input" type="checkbox" id="ligue1"
+                   [checked]="filtrosActivos.liga.ligue1"
+                   (change)="onFiltroChange('liga', 'ligue1', $event)">
+            <label class="form-check-label" for="ligue1">
+              Ligue 1
+            </label>
+          </div>
+
+          <!-- CATEGORÍA -->
+          <h6 class="titulo-filtro mt-4">Categoría</h6>
+          <div class="form-check casilla-filtro">
+            <input class="form-check-input" type="checkbox" id="clubes"
+                   [checked]="filtrosActivos.categoria.clubes"
+                   (change)="onFiltroChange('categoria', 'clubes', $event)">
+            <label class="form-check-label" for="clubes">
+              Clubes
+            </label>
+          </div>
+          <div class="form-check casilla-filtro">
+            <input class="form-check-input" type="checkbox" id="selecciones"
+                   [checked]="filtrosActivos.categoria.selecciones"
+                   (change)="onFiltroChange('categoria', 'selecciones', $event)">
+            <label class="form-check-label" for="selecciones">
+              Selecciones
+            </label>
+          </div>
+          <!-- FILTRO CHAMPIONS -->
+          <div class="form-check casilla-filtro">
+            <input class="form-check-input" type="checkbox" id="champions"
+                   [checked]="filtrosActivos.categoria.champions"
+                   (change)="onFiltroChange('categoria', 'champions', $event)">
+            <label class="form-check-label" for="champions">
+              Champions League
+            </label>
+          </div>
+
+          <!-- PRECIO -->
+          <h6 class="titulo-filtro mt-4">Precio</h6>
+          <input type="range" class="form-range carrusel-precio" min="0" max="150" [value]="precioMaximo"
+                 (input)="onPrecioChange($event)" id="rango-precio">
+          <div class="d-flex justify-content-between align-items-center">
+            <small>0 €</small>
+            <div class="text-center">
+              <span class="badge bg-primary">Hasta {{precioMaximo}} €</span>
+            </div>
+            <small>150 €</small>
+          </div>
+
+          <button class="btn boton-limpiar w-100 mt-4" (click)="limpiarFiltros()">
+            <i class="bi bi-x-circle me-2"></i> Limpiar Todos los Filtros
+          </button>
+        </div>
+      </div>
+
+      <!-- Productos -->
+      <div class="col-lg-9">
+        <!-- Mensaje cuando no hay resultados -->
+        <div *ngIf="productosFiltrados.length === 0 && !loading" class="text-center py-5">
+          <i class="bi bi-search display-1 text-muted"></i>
+          <h4 class="mt-3">No se encontraron camisetas</h4>
+          <p class="text-muted">Intenta con otros términos de búsqueda o ajusta los filtros</p>
+          <button class="btn btn-outline-primary mt-3" (click)="limpiarFiltros()">
+            <i class="bi bi-filter-circle"></i> Limpiar todos los filtros
+          </button>
+        </div>
+
+        <!-- Contador de productos encontrados -->
+        <div *ngIf="productosFiltrados.length > 0" class="mb-3">
+          <div class="d-flex justify-content-between align-items-center">
+            <p class="mb-0 text-muted">
+              <i class="bi bi-grid-3x3-gap me-1"></i>
+              Mostrando <strong>{{productosFiltrados.length}}</strong> de <strong>{{camisetas.length}}</strong> productos
+            </p>
+          </div>
+          <hr class="mt-2">
+        </div>
+
+        <div class="row g-4" *ngIf="productosFiltrados.length > 0">
+          <div class="col-md-4 col-sm-6" *ngFor="let producto of productosFiltrados; let i = index">
+
+            <!-- TARJETA COMPLETA -->
+            <div class="tarjeta-producto"
+                 [class.agregando]="productoAgregando === i"
+                 [routerLink]="['/producto', producto.id]"
+                 style="cursor: pointer;">
+
+              <!-- Imagen del producto -->
+              <div class="contenedor-imagen">
+                <img [src]="'img/' + obtenerNombreImagen(producto.imagenes[0])"
+                     class="imagen-producto"
+                     [alt]="producto.nombre"
+                     (error)="onErrorImagen($event)">
+                <div class="imagen-producto espacio-imagen" style="display: none;">Imagen no disponible</div>
+                <span class="etiqueta-fan" *ngIf="producto.tipo === 'fanVersion'">
+                  FAN CREATION
+                </span>
+              </div>
+
+              <div class="cuerpo-producto">
+
+                <!-- Título del producto -->
+                <h6 class="titulo-producto text-dark">{{ producto.nombre }}</h6>
+
+                <!-- Club y Liga -->
+                <p class="club-producto text-muted mb-1">
+                  <i class="bi bi-people-fill me-1"></i>{{ producto.club }}
+                </p>
+                <p class="liga-producto small text-muted" *ngIf="producto.liga">
+                  <i class="bi bi-trophy me-1"></i>
+                  {{ producto.liga === 'LaLiga' ? 'La Liga' :
+                  producto.liga === 'Premier' ? 'Premier League' :
+                    producto.liga === 'SerieA' ? 'Serie A' :
+                      producto.liga === 'Bundesliga' ? 'Bundesliga' :
+                        producto.liga === 'Ligue1' ? 'Ligue 1' : producto.liga }}
+                </p>
+
+                <div (click)="$event.stopPropagation();">
+
+                  <!-- Selección de Talla -->
+                  <div class="selector-talla">
+                    <button class="boton-talla"
+                            *ngFor="let talla of producto.tallasDisponibles || ['S', 'M', 'L', 'XL']"
+                            (click)="seleccionarTalla(i, talla, $event)"
+                            [class.activo]="tallaSeleccionada[i] === talla"
+                            [class.disabled]="producto.stock !== undefined && producto.stock <= 0">
+                      {{ talla }}
+                      <span *ngIf="producto.stock !== undefined && producto.stock <= 0" class="ms-1">(Sin stock)</span>
+                    </button>
+                  </div>
+
+                  <!-- Stock disponible -->
+                  <div *ngIf="producto.stock !== undefined" class="mb-2">
+                    <small [class.text-success]="producto.stock > 5"
+                           [class.text-warning]="producto.stock > 0 && producto.stock <= 5"
+                           [class.text-danger]="producto.stock === 0">
+                      <i class="bi bi-box-seam"></i>
+                      {{ producto.stock > 5 ? 'Disponible' : producto.stock > 0 ? 'Últimas unidades' : 'Agotado' }}
+                      <span *ngIf="producto.stock > 0">({{producto.stock}})</span>
+                    </small>
+                  </div>
+
+                  <!-- BOTÓN AÑADIR AL CARRITO -->
+                  <button class="btn-anadir-carrito"
+                          [class.activo]="tallaSeleccionada[i] && (producto.stock === undefined || producto.stock > 0)"
+                          [class.agregando]="productoAgregando === i"
+                          [disabled]="!tallaSeleccionada[i] || productoAgregando === i || (producto.stock !== undefined && producto.stock <= 0)"
+                          (click)="agregarAlCarrito(i, $event)">
+                    <i class="bi bi-cart-plus"></i>
+                    <span *ngIf="productoAgregando !== i">
+                      {{ !tallaSeleccionada[i] ? 'Selecciona Talla' :
+                      (producto.stock !== undefined && producto.stock <= 0) ? 'Agotado' : 'Añadir al Carrito' }}
+                    </span>
+                    <span *ngIf="productoAgregando === i">
+                      <i class="bi bi-arrow-repeat spin"></i> Añadiendo...
+                    </span>
+                  </button>
+
+                  <!-- PRECIO -->
+                  <div class="d-flex justify-content-between align-items-center mt-2">
+                    <p class="precio-producto mb-0 text-dark">
+                      <strong>{{ producto.precio | currency:'EUR':'symbol':'1.2-2' }}</strong>
+                    </p>
+                    <!-- Indicador de que es clickeable -->
+                    <span class="text-muted small">
+                      <i class="bi bi-box-arrow-up-right"></i> Ver detalles
+                    </span>
+                  </div>
+                </div>
+
+              </div>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+</main>
+
+<!-- Footer -->
+<footer class="pie-pagina">
+  <div class="container">
+    <div class="row">
+      <div class="col-md-3 mb-4">
+        <h5 class="titulo-pie">CAMISFUT</h5>
+        <p>Tu tienda de confianza para camisetas de fútbol nuevas y vintage.</p>
+      </div>
+      <div class="col-md-3 mb-4">
+        <h5 class="titulo-pie">Navegación</h5>
+        <ul class="list-unstyled">
+          <li><a routerLink="/inicio" class="enlace-pie">Inicio</a></li>
+          <li><a routerLink="/catalogo" class="enlace-pie">Catálogo</a></li>
+          <li><a routerLink="/colecciones" class="enlace-pie">Colecciones</a></li>
+          <li><a routerLink="/nosotros" class="enlace-pie">Nosotros</a></li>
+          <li><a routerLink="/opiniones" class="enlace-pie">Opiniones</a></li>
+        </ul>
+      </div>
+      <div class="col-md-3 mb-4">
+        <h5 class="titulo-pie">Políticas</h5>
+        <ul class="list-unstyled">
+          <li><a class="enlace-pie">Envíos</a></li>
+          <li><a class="enlace-pie">Devoluciones</a></li>
+          <li><a class="enlace-pie">Privacidad</a></li>
+          <li><a class="enlace-pie">Términos y Condiciones</a></li>
+        </ul>
+      </div>
+      <div class="col-md-3 mb-4">
+        <h5 class="titulo-pie">Síguenos</h5>
+        <div class="iconos-redes">
+          <a href="#"><i class="bi bi-facebook"></i></a>
+          <a href="#"><i class="bi bi-instagram"></i></a>
+        </div>
+      </div>
+    </div>
+  </div>
+</footer>

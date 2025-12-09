@@ -1,0 +1,176 @@
+<!-- Navbar -->
+<nav class="navbar navbar-expand-lg navbar-light bg-white border-bottom barra-navegacion">
+  <div class="container d-flex align-items-center">
+    <a class="navbar-brand logo-navegacion" routerLink="/inicio">
+      <img src="img/logo_camis.png" alt="CamisFut">
+    </a>
+    <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#navbarNav">
+      <span class="navbar-toggler-icon"></span>
+    </button>
+    <div class="collapse navbar-collapse" id="navbarNav">
+      <ul class="navbar-nav me-auto">
+        <li class="nav-item"><a class="nav-link" routerLink="/inicio">Inicio</a></li>
+        <li class="nav-item"><a class="nav-link" routerLink="/catalogo">Catálogo</a></li>
+        <li class="nav-item"><a class="nav-link" routerLink="/colecciones">Colecciones</a></li>
+        <li class="nav-item"><a class="nav-link" routerLink="/nosotros">Nosotros</a></li>
+      </ul>
+      <!-- Carrito -->
+      <div class="d-flex align-items-center">
+        <button class="btn btn-outline-secondary d-flex align-items-center justify-content-center position-relative"
+                style="height: 40px; width: 40px;"
+                routerLink="/carrito">
+          <i class="bi bi-cart"></i>
+          <span *ngIf="totalItemsCarrito > 0"
+                class="position-absolute top-0 start-100 translate-middle badge rounded-pill bg-danger"
+                style="font-size: 0.6rem;">
+            {{ totalItemsCarrito }}
+          </span>
+        </button>
+      </div>
+    </div>
+  </div>
+</nav>
+
+<div class="container my-5">
+  <div class="text-center mb-4">
+    <h1 class="titulo-principal">BIENVENIDO A CAMISFUT</h1>
+    <p class="subtitulo-principal">Inicia sesión o crea una cuenta para continuar</p>
+  </div>
+
+  <div class="row justify-content-center">
+    <div class="col-md-6">
+      <div class="d-flex justify-content-center mb-4">
+        <button class="boton-formulario"
+                [class.activo]="formularioActivo === 'login'"
+                (click)="cambiarFormulario('login')">
+          Iniciar Sesión
+        </button>
+        <button class="boton-formulario"
+                [class.activo]="formularioActivo === 'registro'"
+                (click)="cambiarFormulario('registro')">
+          Registrarse
+        </button>
+      </div>
+
+      <!-- Formulario Login -->
+      <div class="contenedor-formulario" *ngIf="formularioActivo === 'login'">
+        <h5 class="mb-3">Iniciar Sesión</h5>
+        <p class="mb-4">Ingresa tus credenciales para acceder a tu cuenta</p>
+        <form (ngSubmit)="onLoginSubmit()">
+          <div class="mb-3">
+            <label for="email-iniciar" class="etiqueta-form">Email</label>
+            <input type="email" class="form-control campo-form" id="email-iniciar"
+                   placeholder="tu@email.com" required
+                   [(ngModel)]="loginData.email" name="email">
+          </div>
+          <div class="mb-3">
+            <label for="clave-iniciar" class="etiqueta-form">Contraseña</label>
+            <input type="password" class="form-control campo-form" id="clave-iniciar"
+                   placeholder="********" required
+                   [(ngModel)]="loginData.password" name="password">
+          </div>
+          <div class="mb-3">
+            <a href="#" class="enlace-olvido">¿Olvidaste tu contraseña?</a>
+          </div>
+          <button type="submit" class="btn btn-primario">Iniciar Sesión</button>
+        </form>
+      </div>
+
+      <!-- Formulario Registro -->
+      <div class="contenedor-formulario" *ngIf="formularioActivo === 'registro'">
+        <h5 class="mb-3">Crear Cuenta</h5>
+        <p class="mb-4">Completa el formulario para crear tu cuenta</p>
+        <form (ngSubmit)="onRegisterSubmit()">
+          <div class="mb-3">
+            <label for="nombre-completo" class="etiqueta-form">Nombre completo</label>
+            <input type="text" class="form-control campo-form" id="nombre-completo"
+                   placeholder="Tu nombre" required
+                   [(ngModel)]="registerData.nombre" name="nombre">
+          </div>
+          <div class="mb-3">
+            <label for="email-registro" class="etiqueta-form">Email</label>
+            <input type="email" class="form-control campo-form" id="email-registro"
+                   placeholder="tu@email.com" required
+                   [(ngModel)]="registerData.email" name="email">
+          </div>
+          <div class="mb-3">
+            <label for="clave-registro" class="etiqueta-form">Contraseña</label>
+            <input type="password" class="form-control campo-form" id="clave-registro"
+                   placeholder="********" required
+                   [(ngModel)]="registerData.password" name="password">
+          </div>
+          <div class="mb-3">
+            <label for="clave-confirmar" class="etiqueta-form">Confirmar contraseña</label>
+            <input type="password" class="form-control campo-form" id="clave-confirmar"
+                   placeholder="********" required
+                   [(ngModel)]="registerData.confirmPassword" name="confirmPassword">
+          </div>
+          <button type="submit" class="btn btn-primario">Crear Cuenta</button>
+        </form>
+      </div>
+
+      <div class="text-center mt-3 texto-terminos">
+        Al continuar, aceptas nuestros <a href="#">Términos y Condiciones</a> y <a href="#">Política de Privacidad</a>
+      </div>
+    </div>
+  </div>
+</div>
+
+<!-- Mensaje de éxito -->
+<div class="overlay-mensaje" *ngIf="mostrarExito" (click)="cerrarMensaje()"></div>
+
+<div class="mensaje-exito" *ngIf="mostrarExito">
+  <div class="icono-exito" [class.registro]="tipoAccion === 'registro'">
+    <i class="bi" [class.bi-check-lg]="tipoAccion === 'registro'" [class.bi-person-check]="tipoAccion === 'login'"></i>
+  </div>
+  <h3 class="titulo-exito">
+    {{ tipoAccion === 'login' ? '¡INICIO EXITOSO!' : '¡REGISTRO EXITOSO!' }}
+  </h3>
+  <p class="texto-exito">
+    {{ mensajeExito }}
+  </p>
+  <div class="contador-redireccion">
+    <i class="bi bi-arrow-right"></i>
+    Redirigiendo a inicio en 2 segundos...
+  </div>
+  <button class="boton-cerrar" (click)="cerrarMensaje()">
+    Ir a Inicio Ahora
+  </button>
+</div>
+
+<!-- Footer -->
+<footer class="pie-pagina">
+  <div class="container">
+    <div class="row">
+      <div class="col-md-3 mb-4">
+        <h5 class="titulo-pie">CAMISFUT</h5>
+        <p>Tu tienda de confianza para camisetas de fútbol nuevas y vintage.</p>
+      </div>
+      <div class="col-md-3 mb-4">
+        <h5 class="titulo-pie">Navegación</h5>
+        <ul class="list-unstyled">
+          <li><a routerLink="/inicio" class="enlace-pie">Inicio</a></li>
+          <li><a routerLink="/catalogo" class="enlace-pie">Catálogo</a></li>
+          <li><a routerLink="/colecciones" class="enlace-pie">Colecciones</a></li>
+          <li><a routerLink="/nosotros" class="enlace-pie">Nosotros</a></li>
+        </ul>
+      </div>
+      <div class="col-md-3 mb-4">
+        <h5 class="titulo-pie">Políticas</h5>
+        <ul class="list-unstyled">
+          <li><a class="enlace-pie">Envíos</a></li>
+          <li><a class="enlace-pie">Devoluciones</a></li>
+          <li><a class="enlace-pie">Privacidad</a></li>
+          <li><a class="enlace-pie">Términos y Condiciones</a></li>
+        </ul>
+      </div>
+      <div class="col-md-3 mb-4">
+        <h5 class="titulo-pie">Síguenos</h5>
+        <div class="iconos-redes">
+          <a href="#"><i class="bi bi-facebook"></i></a>
+          <a href="#"><i class="bi bi-instagram"></i></a>
+        </div>
+      </div>
+    </div>
+  </div>
+</footer>

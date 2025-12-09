@@ -1,0 +1,316 @@
+<!-- Navbar -->
+<nav class="navbar navbar-expand-lg navbar-light bg-white border-bottom barra-navegacion">
+  <div class="container d-flex align-items-center">
+    <a class="navbar-brand logo-navegacion" routerLink="/inicio">
+      <img src="img/logo_camis.png" alt="CamisFut">
+    </a>
+    <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#navbarNav">
+      <span class="navbar-toggler-icon"></span>
+    </button>
+    <div class="collapse navbar-collapse" id="navbarNav">
+      <ul class="navbar-nav me-auto">
+        <li class="nav-item"><a class="nav-link active" routerLink="/inicio">Inicio</a></li>
+        <li class="nav-item"><a class="nav-link" routerLink="/catalogo">Catálogo</a></li>
+        <li class="nav-item"><a class="nav-link" routerLink="/colecciones">Colecciones</a></li>
+        <li class="nav-item"><a class="nav-link" routerLink="/nosotros">Nosotros</a></li>
+      </ul>
+      <div class="d-flex align-items-center">
+        <!-- Mostrar icono de perfil si está logueado -->
+        <div *ngIf="isLoggedIn" class="dropdown">
+          <button class="btn btn-outline-secondary d-flex align-items-center justify-content-center dropdown-toggle"
+                  style="height: 40px; width: 40px;"
+                  type="button"
+                  id="dropdownMenuButton"
+                  data-bs-toggle="dropdown"
+                  aria-expanded="false">
+            <i class="bi bi-person"></i>
+          </button>
+          <ul class="dropdown-menu dropdown-menu-end" aria-labelledby="dropdownMenuButton">
+            <li><span class="dropdown-item-text fw-bold text-primary">Hola, {{userName}}</span></li>
+            <li><hr class="dropdown-divider"></li>
+            <li>
+              <a class="dropdown-item" routerLink="/mis-pedidos" (click)="closeDropdown()">
+                <i class="bi bi-bag me-2"></i>Mis Pedidos
+              </a>
+            </li>
+            <li>
+              <button class="dropdown-item text-danger" (click)="logout(); closeDropdown()">
+                <i class="bi bi-box-arrow-right me-2"></i>Cerrar Sesión
+              </button>
+            </li>
+          </ul>
+        </div>
+
+        <!-- Mostrar botón de inicio sesión si NO está logueado -->
+        <a *ngIf="!isLoggedIn" routerLink="/inicio-sesion" class="btn btn-inicio-sesion me-3">
+          Iniciar Sesión
+        </a>
+
+        <!-- Carrito (siempre visible) -->
+        <button class="btn btn-outline-secondary d-flex align-items-center justify-content-center position-relative"
+                style="height: 40px; width: 40px; margin-left: 10px;"
+                routerLink="/carrito">
+          <i class="bi bi-cart"></i>
+          <!-- BADGE CON CANTIDAD DE ITEMS -->
+          <span *ngIf="totalItemsCarrito > 0"
+                class="position-absolute top-0 start-100 translate-middle badge rounded-pill bg-danger"
+                style="font-size: 0.6rem; padding: 4px 6px;">
+            {{ totalItemsCarrito }}
+          </span>
+        </button>
+      </div>
+    </div>
+  </div>
+</nav>
+
+<!-- Hero Section -->
+<section class="seccion-hero">
+  <video class="video-hero" autoplay muted loop playsinline>
+    <source src="img/video_paginaweb.mp4" type="video/mp4">
+    Tu navegador no soporta videos.
+  </video>
+  <div class="overlay-hero"></div>
+  <div class="contenido-hero">
+    <h1 class="titulo-principal">TU PASIÓN, TU CAMISETA</h1>
+    <p class="subtitulo-principal">Descubre las mejores camisetas de fútbol nuevas y vintage</p>
+    <a routerLink="/catalogo" class="btn btn-hero">Ir al Catálogo</a>
+  </div>
+</section>
+
+<!-- Últimas Novedades -->
+<section class="container my-5">
+  <div class="text-center mb-4">
+    <h2 class="titulo-seccion">ÚLTIMAS NOVEDADES</h2>
+    <p class="subtitulo-seccion">Las camisetas más buscadas de nuestra web</p>
+  </div>
+  <div class="row">
+    <div class="col-md-4 mb-4">
+      <div class="tarjeta-producto">
+        <div class="position-relative">
+          <img src="img/barca.jpg" alt="Camiseta del FC Barcelona 1998/99" class="imagen-producto">
+          <span class="badge bg-success position-absolute top-0 end-0 m-2">Vintage</span>
+        </div>
+        <div class="info-producto">
+          <h6 class="titulo-producto">FC Barcelona 1998/99</h6>
+          <p class="precio-producto">€89.99</p>
+        </div>
+      </div>
+    </div>
+    <div class="col-md-4 mb-4">
+      <div class="tarjeta-producto">
+        <div class="position-relative">
+          <img src="img/madrid.jpg" alt="Camiseta del Real Madrid 2024/25" class="imagen-producto">
+          <span class="badge bg-info position-absolute top-0 end-0 m-2">Nueva</span>
+        </div>
+        <div class="info-producto">
+          <h6 class="titulo-producto">Real Madrid 2024/25</h6>
+          <p class="precio-producto">€79.99</p>
+        </div>
+      </div>
+    </div>
+    <div class="col-md-4 mb-4">
+      <div class="tarjeta-producto">
+        <div class="position-relative">
+          <img src="img/argentina97.jpg" alt="Camiseta de Argentina 1996" class="imagen-producto">
+          <span class="badge bg-success position-absolute top-0 end-0 m-2">Vintage</span>
+        </div>
+        <div class="info-producto">
+          <h6 class="titulo-producto">Argentina 1996</h6>
+          <p class="precio-producto">€94.99</p>
+        </div>
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- Segunda fila de productos -->
+<section class="container my-5">
+  <div class="row">
+    <div class="col-md-4 mb-4">
+      <div class="tarjeta-producto">
+        <div class="position-relative">
+          <img src="img/man_united_2008.jpg" alt="Camiseta del Manchester United 2007/2008" class="imagen-producto">
+          <span class="badge bg-success position-absolute top-0 end-0 m-2">Vintage</span>
+        </div>
+        <div class="info-producto">
+          <h6 class="titulo-producto">Manchester United 2007/2008</h6>
+          <p class="precio-producto">€99.99</p>
+        </div>
+      </div>
+    </div>
+    <div class="col-md-4 mb-4">
+      <div class="tarjeta-producto">
+        <div class="position-relative">
+          <img src="img/brasil.jpg" alt="Camiseta de Brasil 2004" class="imagen-producto">
+          <span class="badge bg-info position-absolute top-0 end-0 m-2">Vintage</span>
+        </div>
+        <div class="info-producto">
+          <h6 class="titulo-producto">Brasil 2004 local</h6>
+          <p class="precio-producto">€84.99</p>
+        </div>
+      </div>
+    </div>
+    <div class="col-md-4 mb-4">
+      <div class="tarjeta-producto">
+        <div class="position-relative">
+          <img src="img/ACmilan.jpg" alt="Camiseta del AC Milan 2006-2007" class="imagen-producto">
+          <span class="badge bg-success position-absolute top-0 end-0 m-2">Vintage</span>
+        </div>
+        <div class="info-producto">
+          <h6 class="titulo-producto">Camiseta AC Milan 2006-2007 Local Manga Larga</h6>
+          <p class="precio-producto">€99.99</p>
+        </div>
+      </div>
+    </div>
+  </div>
+  <div class="text-center mt-4">
+    <a routerLink="/catalogo" class="btn btn-contorno-primario">Ver Todo el Catálogo</a>
+  </div>
+</section>
+
+<!-- Colecciones Destacadas -->
+<section class="container my-5">
+  <div class="text-center mb-4">
+    <h2 class="titulo-seccion">COLECCIONES DESTACADAS</h2>
+    <p class="subtitulo-seccion">Explora nuestras diversas colecciones</p>
+  </div>
+  <div class="row">
+    <div class="col-md-3 mb-4">
+      <div class="tarjeta-coleccion">
+        <img src="img/champions.jpg" alt="Colección Champions League" class="imagen-coleccion">
+        <div class="info-coleccion">
+          <h6 class="titulo-coleccion">Champions League</h6>
+          <p class="cuenta-coleccion">10 camisetas</p>
+        </div>
+      </div>
+    </div>
+    <div class="col-md-3 mb-4">
+      <div class="tarjeta-coleccion">
+        <img src="img/seleccion.jpg" alt="Colección Selecciones Nacionales" class="imagen-coleccion">
+        <div class="info-coleccion">
+          <h6 class="titulo-coleccion">Selecciones Nacionales</h6>
+          <p class="cuenta-coleccion">10 camisetas</p>
+        </div>
+      </div>
+    </div>
+    <div class="col-md-3 mb-4">
+      <div class="tarjeta-coleccion">
+        <img src="img/retro.jpg" alt="Colección Retro" class="imagen-coleccion">
+        <div class="info-coleccion">
+          <h6 class="titulo-coleccion">Colección Retro</h6>
+          <p class="cuenta-coleccion">30 camisetas</p>
+        </div>
+      </div>
+    </div>
+    <div class="col-md-3 mb-4">
+      <div class="tarjeta-coleccion">
+        <img src="img/fanVersion.jpg" alt="Colección Fans Version" class="imagen-coleccion">
+        <div class="info-coleccion">
+          <h6 class="titulo-coleccion">Fans Version</h6>
+          <p class="cuenta-coleccion">8 camisetas</p>
+        </div>
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- Testimonios -->
+<section class="container my-5">
+  <div class="text-center mb-4">
+    <h2 class="titulo-seccion">LO QUE DICEN NUESTROS CLIENTES</h2>
+    <p class="subtitulo-seccion">Miles de clientes satisfechos en toda España</p>
+  </div>
+  <div class="row">
+    <div class="col-md-3">
+      <div class="tarjeta-testimonio">
+        <div>
+          <div class="estrellas">★★★★★</div>
+          <p>"Excelente calidad en las camisetas de esta página. Mi último pedido fue rápido y en perfecto estado."</p>
+        </div>
+        <div>
+          <div class="nombre-cliente">Carlos M.</div>
+          <div class="fecha-cliente">Hace 2 días</div>
+        </div>
+      </div>
+    </div>
+    <div class="col-md-3">
+      <div class="tarjeta-testimonio">
+        <div>
+          <div class="estrellas">★★★★★</div>
+          <p>"Envío rápido y producto tal como se describe. Muy contenta con mi camiseta de Argentina."</p>
+        </div>
+        <div>
+          <div class="nombre-cliente">Laura G.</div>
+          <div class="fecha-cliente">Hace 1 semana</div>
+        </div>
+      </div>
+    </div>
+    <div class="col-md-3">
+      <div class="tarjeta-testimonio">
+        <div>
+          <div class="estrellas">★★★★★</div>
+          <p>"Gran variedad de camisetas. El servicio al cliente es excepcional, los que me atendieron fueron muy agradables conmigo."</p>
+        </div>
+        <div>
+          <div class="nombre-cliente">Miguel R.</div>
+          <div class="fecha-cliente">Hace 2 semanas</div>
+        </div>
+      </div>
+    </div>
+    <div class="col-md-3">
+      <div class="tarjeta-testimonio">
+        <div>
+          <div class="estrellas">★★★★★</div>
+          <p>"Calidad y autenticidad garantizada. Volveré a comprar sin duda."</p>
+        </div>
+        <div>
+          <div class="nombre-cliente">Ana P.</div>
+          <div class="fecha-cliente">Hace 3 semanas</div>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <div class="text-center mt-4">
+    <a routerLink="/opiniones" class="btn btn-contorno-primario">
+      Ver Todas las Opiniones
+    </a>
+  </div>
+</section>
+
+<!-- Footer -->
+<footer class="pie-pagina">
+  <div class="container">
+    <div class="row">
+      <div class="col-md-3 mb-4">
+        <h5 class="titulo-pie">CAMISFUT</h5>
+        <p>Tu tienda de confianza para camisetas de fútbol.</p>
+      </div>
+      <div class="col-md-3 mb-4">
+        <h5 class="titulo-pie">Navegación</h5>
+        <ul class="list-unstyled">
+          <li><a routerLink="/inicio" class="enlace-pie">Inicio</a></li>
+          <li><a routerLink="/catalogo" class="enlace-pie">Catálogo</a></li>
+          <li><a routerLink="/colecciones" class="enlace-pie">Colecciones</a></li>
+          <li><a routerLink="/nosotros" class="enlace-pie">Nosotros</a></li>
+        </ul>
+      </div>
+      <div class="col-md-3 mb-4">
+        <h5 class="titulo-pie">Políticas</h5>
+        <ul class="list-unstyled">
+          <li><a class="enlace-pie">Envíos</a></li>
+          <li><a class="enlace-pie">Devoluciones</a></li>
+          <li><a class="enlace-pie">Privacidad</a></li>
+          <li><a class="enlace-pie">Términos y Condiciones</a></li>
+        </ul>
+      </div>
+      <div class="col-md-3 mb-4">
+        <h5 class="titulo-pie">Síguenos</h5>
+        <div class="iconos-redes">
+          <a href="#"><i class="bi bi-facebook"></i></a>
+          <a href="#"><i class="bi bi-instagram"></i></a>
+        </div>
+      </div>
+    </div>
+  </div>
+</footer>

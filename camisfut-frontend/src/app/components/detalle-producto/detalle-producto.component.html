@@ -1,0 +1,242 @@
+<!-- Navbar -->
+<nav class="navbar navbar-expand-lg navbar-light bg-white border-bottom barra-navegacion">
+  <div class="container d-flex align-items-center">
+    <a class="navbar-brand logo-navegacion" routerLink="/inicio">
+      <img src="img/logo_camis.png" alt="CamisFut">
+    </a>
+    <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#navbarNav">
+      <span class="navbar-toggler-icon"></span>
+    </button>
+    <div class="collapse navbar-collapse" id="navbarNav">
+      <ul class="navbar-nav me-auto">
+        <li class="nav-item"><a class="nav-link" routerLink="/inicio">Inicio</a></li>
+        <li class="nav-item"><a class="nav-link" routerLink="/catalogo">Catálogo</a></li>
+        <li class="nav-item"><a class="nav-link" routerLink="/colecciones">Colecciones</a></li>
+        <li class="nav-item"><a class="nav-link" routerLink="/nosotros">Nosotros</a></li>
+      </ul>
+      <div class="d-flex align-items-center">
+        <!-- Mostrar icono de perfil si está logueado -->
+        <div *ngIf="isLoggedIn" class="dropdown">
+          <button class="btn btn-outline-secondary d-flex align-items-center justify-content-center dropdown-toggle"
+                  style="height: 40px; width: 40px;"
+                  type="button"
+                  data-bs-toggle="dropdown"
+                  aria-expanded="false">
+            <i class="bi bi-person"></i>
+          </button>
+          <ul class="dropdown-menu dropdown-menu-end">
+            <li><span class="dropdown-item-text">Hola, {{userName}}</span></li>
+            <li><hr class="dropdown-divider"></li>
+            <li><a class="dropdown-item" routerLink="/mis-pedidos"><i class="bi bi-bag me-2"></i>Mis Pedidos</a></li>
+          </ul>
+        </div>
+
+        <!-- Mostrar botón de inicio sesión si NO está logueado -->
+        <a *ngIf="!isLoggedIn" routerLink="/inicio-sesion" class="btn btn-inicio-sesion me-3">Iniciar Sesión</a>
+
+        <!-- Carrito -->
+        <button class="btn btn-outline-secondary d-flex align-items-center justify-content-center position-relative"
+                style="height: 40px; width: 40px;"
+                routerLink="/carrito">
+          <i class="bi bi-cart"></i>
+          <span *ngIf="totalItemsCarrito > 0"
+                class="position-absolute top-0 start-100 translate-middle badge rounded-pill bg-danger"
+                style="font-size: 0.6rem;">
+            {{ totalItemsCarrito }}
+          </span>
+        </button>
+      </div>
+    </div>
+  </div>
+</nav>
+
+<main class="container my-5">
+  <!-- Loading State -->
+  <div *ngIf="loading" class="text-center py-5">
+    <div class="spinner-border text-primary" role="status" style="width: 3rem; height: 3rem;">
+      <span class="visually-hidden">Cargando...</span>
+    </div>
+    <p class="mt-3 fs-5">Cargando detalles del producto...</p>
+  </div>
+
+  <!-- Error State -->
+  <div *ngIf="error && !loading" class="alert alert-danger text-center py-5">
+    <i class="bi bi-exclamation-triangle fs-1 mb-3 d-block"></i>
+    <h4>{{ error }}</h4>
+    <p class="mb-4">El producto que buscas no existe o no está disponible.</p>
+    <a routerLink="/catalogo" class="btn btn-primary">
+      <i class="bi bi-arrow-left me-2"></i>Volver al Catálogo
+    </a>
+  </div>
+
+  <!-- Producto Detalles -->
+  <div *ngIf="!loading && !error && producto" class="producto-detalle">
+    <!-- Botón volver -->
+    <div class="mb-4">
+      <a routerLink="/catalogo" class="btn btn-outline-secondary">
+        <i class="bi bi-arrow-left me-2"></i>Volver al Catálogo
+      </a>
+    </div>
+
+    <div class="row">
+      <!-- Columna Imagen -->
+      <div class="col-lg-6 mb-4">
+        <div class="contenedor-imagen-detalle">
+          <img [src]="'img/' + obtenerNombreImagen(producto.imagenes[0])"
+               class="img-fluid rounded shadow"
+               [alt]="producto.nombre"
+               (error)="onErrorImagen($event)">
+          <div class="imagen-producto espacio-imagen" style="display: none;">
+            <i class="bi bi-image fs-1"></i>
+            <p class="mt-2">Imagen no disponible</p>
+          </div>
+
+          <!-- Badges -->
+          <div class="position-absolute top-0 start-0 p-3">
+            <span *ngIf="producto.retro" class="badge bg-warning fs-6 p-2">RETRO</span>
+            <span *ngIf="producto.tipo === 'nuevas'" class="badge bg-success fs-6 p-2 ms-2">NUEVO</span>
+          </div>
+        </div>
+
+        <!-- Miniaturas -->
+        <div *ngIf="producto.imagenes.length > 1" class="d-flex gap-2 mt-3">
+          <div *ngFor="let img of producto.imagenes; let i = index"
+               class="miniatura-imagen">
+            <img [src]="'img/' + obtenerNombreImagen(img)"
+                 class="img-thumbnail"
+                 [alt]="'Miniatura ' + (i+1)">
+          </div>
+        </div>
+      </div>
+
+      <!-- Columna Información -->
+      <div class="col-lg-6">
+        <!-- Título y categorías -->
+        <div class="mb-4">
+          <h1 class="display-5 fw-bold mb-2 text-dark">{{ producto.nombre }}</h1>
+          <div class="d-flex align-items-center mb-3">
+            <span class="badge bg-primary me-2 fs-6">{{ producto.tipo | uppercase }}</span>
+            <span class="badge bg-secondary me-2 fs-6">{{ producto.categoria | uppercase }}</span>
+            <span *ngIf="producto.liga" class="badge bg-info fs-6">{{ producto.liga | uppercase }}</span>
+          </div>
+          <p class="fs-4 text-muted">
+            <i class="bi bi-shop me-2"></i>{{ producto.club }}
+          </p>
+        </div>
+
+        <!-- Precio -->
+        <div class="mb-4">
+          <h2 class="text-success fw-bold">{{ producto.precio | currency:'EUR':'symbol':'1.2-2' }}</h2>
+          <p class="mb-0">
+            <span [class.text-success]="producto.stock > 5"
+                  [class.text-warning]="producto.stock > 0 && producto.stock <= 5"
+                  [class.text-danger]="producto.stock === 0">
+              <i class="bi bi-box-seam me-1"></i>
+              {{ producto.stock > 5 ? 'Disponible' : producto.stock > 0 ? 'Últimas unidades' : 'Agotado' }}
+              <span *ngIf="producto.stock > 0">({{producto.stock}} unidades)</span>
+            </span>
+          </p>
+        </div>
+
+        <!-- Descripción -->
+        <div class="mb-4" *ngIf="producto.descripcion">
+          <h4 class="mb-3">Descripción</h4>
+          <p class="fs-5">{{ producto.descripcion }}</p>
+        </div>
+
+        <!-- Selección de Talla -->
+        <div class="mb-4">
+          <h4 class="mb-3">Seleccionar Talla</h4>
+          <div class="d-flex flex-wrap gap-2">
+            <button *ngFor="let talla of (producto.tallasDisponibles || ['S', 'M', 'L', 'XL'])"
+                    class="btn btn-outline-primary btn-talla"
+                    [class.active]="talla === tallaSeleccionada"
+                    [class.disabled]="producto.stock <= 0"
+                    (click)="seleccionarTalla(talla)">
+              {{ talla }}
+              <span *ngIf="producto.stock <= 0" class="ms-1 small">(Sin stock)</span>
+            </button>
+          </div>
+          <p *ngIf="!tallaSeleccionada" class="text-muted mt-2">
+            <i class="bi bi-info-circle me-1"></i>Por favor, selecciona una talla
+          </p>
+        </div>
+
+        <!-- Botón Añadir al Carrito -->
+        <div class="mb-4">
+          <button class="btn btn-primary btn-lg w-100 py-3"
+                  [class.disabled]="!tallaSeleccionada || agregando || producto.stock <= 0"
+                  (click)="agregarAlCarrito()"
+                  [disabled]="!tallaSeleccionada || agregando || producto.stock <= 0">
+            <div *ngIf="!agregando">
+              <i class="bi bi-cart-plus me-2"></i>
+              {{ !tallaSeleccionada ? 'SELECCIONA UNA TALLA' :
+              producto.stock <= 0 ? 'PRODUCTO AGOTADO' :
+                'AÑADIR AL CARRITO' }}
+            </div>
+            <div *ngIf="agregando">
+              <i class="bi bi-arrow-repeat spin me-2"></i>
+              AÑADIENDO...
+            </div>
+          </button>
+        </div>
+
+        <!-- Información adicional -->
+        <div class="card border-0 bg-light shadow-sm">
+          <div class="card-body">
+            <h5 class="card-title mb-3">
+              <i class="bi bi-info-circle me-2"></i>Información del producto
+            </h5>
+            <ul class="list-unstyled">
+              <li class="mb-2"><strong>Tipo:</strong> {{ producto.tipo }}</li>
+              <li class="mb-2"><strong>Categoría:</strong> {{ producto.categoria }}</li>
+              <li *ngIf="producto.liga" class="mb-2"><strong>Liga:</strong> {{ producto.liga }}</li>
+              <li class="mb-2"><strong>Estado:</strong> {{ producto.retro ? 'Retro/Vintage' : 'Nuevo' }}</li>
+              <li *ngIf="producto.fechaCreacion" class="mb-2">
+                <strong>Añadido:</strong> {{ producto.fechaCreacion | date:'dd/MM/yyyy' }}
+              </li>
+            </ul>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+</main>
+
+<!-- Footer -->
+<footer class="pie-pagina">
+  <div class="container">
+    <div class="row">
+      <div class="col-md-3 mb-4">
+        <h5 class="titulo-pie">CAMISFUT</h5>
+        <p>Tu tienda de confianza para camisetas de fútbol nuevas y vintage.</p>
+      </div>
+      <div class="col-md-3 mb-4">
+        <h5 class="titulo-pie">Navegación</h5>
+        <ul class="list-unstyled">
+          <li><a routerLink="/inicio" class="enlace-pie">Inicio</a></li>
+          <li><a routerLink="/catalogo" class="enlace-pie">Catálogo</a></li>
+          <li><a routerLink="/colecciones" class="enlace-pie">Colecciones</a></li>
+          <li><a routerLink="/nosotros" class="enlace-pie">Nosotros</a></li>
+          <li><a routerLink="/opiniones" class="enlace-pie">Opiniones</a></li>
+        </ul>
+      </div>
+      <div class="col-md-3 mb-4">
+        <h5 class="titulo-pie">Políticas</h5>
+        <ul class="list-unstyled">
+          <li><a class="enlace-pie">Envíos</a></li>
+          <li><a class="enlace-pie">Devoluciones</a></li>
+          <li><a class="enlace-pie">Privacidad</a></li>
+          <li><a class="enlace-pie">Términos y Condiciones</a></li>
+        </ul>
+      </div>
+      <div class="col-md-3 mb-4">
+        <h5 class="titulo-pie">Síguenos</h5>
+        <div class="iconos-redes">
+          <a href="#"><i class="bi bi-facebook"></i></a>
+          <a href="#"><i class="bi bi-instagram"></i></a>
+        </div>
+      </div>
+    </div>
+  </div>
+</footer>

@@ -1,0 +1,610 @@
+:root {
+  --color-primario: #8A2BE2;
+  --color-primario-hover: #7A22C2;
+}
+
+body {
+  font-family: 'Inter', sans-serif;
+  background-color: #f8f9fa;
+  color: #111;
+}
+
+h1, h2, h3, h4 {
+  font-family: 'Bebas Neue', cursive;
+  letter-spacing: 0.5px;
+  text-transform: uppercase;
+}
+
+.titulo-principal {
+  font-size: 3rem;
+  font-weight: 700;
+  color: #212529;
+  margin-bottom: 15px;
+}
+
+.subtitulo-principal {
+  color: #6c757d;
+  margin-bottom: 2rem;
+  font-size: 1.2rem;
+}
+
+/* BUSCADOR */
+.buscador-catalogo {
+  position: relative;
+  margin-bottom: 2rem;
+}
+
+.buscador-catalogo .form-control {
+  padding: 12px 20px 12px 45px;
+  border-radius: 25px;
+  border: 2px solid #e9ecef;
+  font-size: 1rem;
+  height: 50px;
+}
+
+.buscador-catalogo .form-control:focus {
+  border-color: var(--color-primario);
+  box-shadow: 0 0 0 0.2rem rgba(138, 43, 226, 0.25);
+}
+
+.icono-buscar {
+  position: absolute;
+  left: 15px;
+  top: 50%;
+  transform: translateY(-50%);
+  color: #6c757d;
+  font-size: 1.2rem;
+  z-index: 2;
+}
+
+/* FILTROS */
+.tarjeta-filtro {
+  background: white;
+  border-radius: 8px;
+  padding: 1.5rem;
+  box-shadow: 0 2px 10px rgba(0,0,0,0.05);
+  max-height: 80vh;
+  overflow-y: auto;
+}
+
+.titulo-filtro {
+  font-weight: bold;
+  margin-bottom: 1rem;
+  color: #333;
+  font-size: 1.1rem;
+  border-bottom: 2px solid var(--color-primario);
+  padding-bottom: 0.5rem;
+}
+
+.casilla-filtro {
+  margin-bottom: 0.5rem;
+  padding: 0.3rem 0;
+}
+
+.casilla-filtro .form-check-input {
+  margin-right: 0.5rem;
+}
+
+.casilla-filtro .form-check-label {
+  font-size: 0.95rem;
+  color: #555;
+  cursor: pointer;
+}
+
+.carrusel-precio {
+  margin: 1rem 0;
+}
+
+/* TARJETA DE PRODUCTO */
+.tarjeta-producto {
+  background: white;
+  border-radius: 8px;
+  overflow: hidden;
+  box-shadow: 0 2px 10px rgba(0,0,0,0.05);
+  transition: all 0.3s ease;
+  height: 100%;
+  cursor: pointer;
+  position: relative;
+  display: block;
+}
+
+.tarjeta-producto:hover {
+  transform: translateY(-5px);
+  box-shadow: 0 8px 25px rgba(0,0,0,0.1);
+}
+
+.tarjeta-producto::after {
+  content: '';
+  position: absolute;
+  top: 0; left: 0; right: 0; bottom: 0;
+  border-radius: 10px;
+  pointer-events: none;
+  transition: border 0.3s;
+  border: 2px solid transparent;
+}
+
+.tarjeta-producto:hover::after {
+  border-color: rgba(138, 43, 226, 0.3);
+}
+
+.imagen-producto,
+.espacio-imagen {
+  height: 300px;
+  width: 100%;
+}
+
+.imagen-producto {
+  object-fit: cover;
+}
+
+.espacio-imagen {
+  background-color: #e9ecef;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  color: #6c757d;
+  font-size: 0.9rem;
+}
+
+.cuerpo-producto {
+  padding: 15px;
+  flex-grow: 1;
+  display: flex;
+  flex-direction: column;
+}
+
+.titulo-producto {
+  font-weight: bold;
+  margin-bottom: 0.5rem;
+  font-size: 1rem;
+  color: #333;
+  line-height: 1.3;
+  transition: color 0.2s;
+}
+
+.tarjeta-producto:hover .titulo-producto {
+  color: #8A2BE2 !important;
+}
+
+.club-producto,
+.liga-producto {
+  color: #666;
+  font-size: 0.85rem;
+  margin-bottom: 0.5rem;
+}
+
+.liga-producto {
+  font-size: 0.8rem;
+}
+
+.precio-producto {
+  font-weight: bold;
+  color: #28a745;
+  font-size: 1.1rem;
+  margin-top: auto;
+  transition: color 0.2s;
+}
+
+.tarjeta-producto:hover .precio-producto {
+  color: #218838;
+}
+
+/* TALLAS */
+.selector-talla {
+  margin: 1rem 0;
+  display: flex;
+  gap: 0.5rem;
+  flex-wrap: wrap;
+}
+
+.boton-talla {
+  padding: 0.4rem 0.8rem;
+  font-size: 0.85rem;
+  border: 1px solid #ddd;
+  border-radius: 4px;
+  cursor: pointer;
+  transition: all 0.2s;
+  background: white;
+  flex: 1;
+  text-align: center;
+  min-width: 60px;
+}
+
+.boton-talla:hover {
+  border-color: var(--color-primario);
+}
+
+.boton-talla.activo {
+  background-color: var(--color-primario);
+  color: white;
+  border-color: var(--color-primario);
+}
+
+/* ETIQUETAS */
+.etiqueta-retro,
+.etiqueta-nuevo,
+.etiqueta-fan,
+.etiqueta-champions {
+  position: absolute;
+  top: 10px;
+  padding: 5px 12px;
+  border-radius: 20px;
+  font-size: 0.75rem;
+  font-weight: bold;
+  z-index: 2;
+  display: flex;
+  align-items: center;
+  box-shadow: 0 2px 5px rgba(0,0,0,0.2);
+}
+
+.etiqueta-retro {
+  right: 10px;
+  background: linear-gradient(135deg, #ff9900, #ff5500);
+  color: white;
+}
+
+.etiqueta-nuevo {
+  left: 10px;
+  background: linear-gradient(135deg, #28a745, #20c997);
+  color: white;
+}
+
+.etiqueta-fan {
+  top: 50px;
+  left: 10px;
+  background: linear-gradient(135deg, #dc3545, #e83e8c);
+  color: white;
+}
+
+.etiqueta-champions {
+  top: 50px;
+  right: 10px;
+  background: linear-gradient(135deg, #ffc107, #fd7e14);
+  color: #212529;
+}
+
+.tarjeta-producto:hover .etiqueta-retro,
+.tarjeta-producto:hover .etiqueta-nuevo,
+.tarjeta-producto:hover .etiqueta-fan,
+.tarjeta-producto:hover .etiqueta-champions {
+  animation: pulse 1s infinite;
+}
+
+@keyframes pulse {
+  0%, 100% { transform: scale(1); }
+  50% { transform: scale(1.05); }
+}
+
+/* BOTONES */
+.boton-limpiar,
+.btn-anadir-carrito {
+  width: 100%;
+  padding: 10px;
+  border-radius: 8px;
+  font-weight: bold;
+  transition: all 0.2s;
+}
+
+.boton-limpiar {
+  margin-top: 1rem;
+  background-color: #f8f9fa;
+  border: 1px solid #dee2e6;
+  color: #333;
+}
+
+.boton-limpiar:hover {
+  background-color: #e9ecef;
+  border-color: var(--color-primario);
+  color: var(--color-primario);
+}
+
+.btn-anadir-carrito {
+  margin-top: 15px;
+  border: none;
+  background-color: #f8f9fa;
+  color: #6c757d;
+  cursor: not-allowed;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: 8px;
+  font-size: 0.9rem;
+}
+
+.btn-anadir-carrito.activo {
+  background-color: var(--color-primario);
+  color: white;
+  cursor: pointer;
+}
+
+.btn-anadir-carrito.activo:hover {
+  background-color: var(--color-primario-hover);
+  transform: translateY(-2px);
+  box-shadow: 0 4px 12px rgba(138, 43, 226, 0.3);
+}
+
+.btn-anadir-carrito.agregando {
+  position: relative;
+  overflow: hidden;
+  background-color: var(--color-primario) !important;
+  color: white !important;
+}
+
+.btn-anadir-carrito.agregando::after {
+  content: '';
+  position: absolute;
+  top: 50%; left: 50%;
+  width: 0; height: 0;
+  border-radius: 50%;
+  background: rgba(255,255,255,0.3);
+  transform: translate(-50%,-50%);
+  animation: ripple 0.6s ease-out;
+}
+
+.spin {
+  animation: spin 1s linear infinite;
+  margin-right: 5px;
+}
+
+/* SIN RESULTADOS */
+.text-center.py-5 {
+  color: #6c757d;
+  padding: 3rem 1rem !important;
+}
+
+.text-center.py-5 .display-1 {
+  font-size: 4rem;
+  margin-bottom: 1rem;
+}
+
+.text-center.py-5 h4 {
+  color: #495057;
+  margin-bottom: 1rem;
+}
+
+/* NAVBAR & FOOTER */
+.barra-navegacion {
+  padding: 0.75rem 1rem;
+  min-height: 70px;
+}
+
+.logo-navegacion img {
+  height: 70px;
+  width: auto;
+  margin-right: 15px;
+}
+
+.btn-inicio-sesion {
+  background-color: white;
+  border: 2px solid var(--color-primario);
+  color: var(--color-primario);
+  font-weight: bold;
+  padding: 8px 15px;
+  border-radius: 20px;
+  font-size: 0.9rem;
+  transition: all 0.2s;
+  text-decoration: none;
+  margin-right: 10px;
+}
+
+.btn-inicio-sesion:hover {
+  background-color: #f8f9fa;
+  border-color: var(--color-primario-hover);
+  color: var(--color-primario-hover);
+}
+
+.pie-pagina {
+  background-color: #121212;
+  color: white;
+  padding: 40px 0;
+  margin-top: 4rem;
+}
+
+.titulo-pie {
+  font-family: 'Bebas Neue', cursive;
+  font-size: 1.2rem;
+  font-weight: 900;
+  margin-bottom: 15px;
+  color: white;
+  text-shadow: -1px -1px 0 #000, 1px -1px 0 #000, -1px 1px 0 #000, 1px 1px 0 #000;
+}
+
+.enlace-pie,
+.iconos-redes a {
+  color: #ccc;
+  text-decoration: none;
+  transition: color 0.2s;
+}
+
+.enlace-pie:hover,
+.iconos-redes a:hover {
+  color: #fff;
+}
+
+.enlace-pie:hover {
+  text-decoration: underline;
+}
+
+.iconos-redes a {
+  font-size: 1.5rem;
+  margin-right: 15px;
+}
+
+/* DROPDOWN */
+.dropdown-toggle::after {
+  display: none;
+}
+
+.dropdown-menu {
+  border: none;
+  box-shadow: 0 4px 12px rgba(0,0,0,0.1);
+  border-radius: 10px;
+  padding: 10px;
+}
+
+.dropdown-item {
+  border-radius: 5px;
+  padding: 8px 12px;
+  margin: 2px 0;
+  cursor: pointer;
+}
+
+.dropdown-item:hover {
+  background-color: #f8f9fa;
+}
+
+.dropdown-item-text {
+  font-weight: bold;
+  color: var(--color-primario);
+}
+
+/* SCROLL FILTROS */
+.tarjeta-filtro::-webkit-scrollbar {
+  width: 6px;
+}
+
+.tarjeta-filtro::-webkit-scrollbar-track {
+  background: #f1f1f1;
+  border-radius: 3px;
+}
+
+.tarjeta-filtro::-webkit-scrollbar-thumb {
+  background: var(--color-primario);
+  border-radius: 3px;
+}
+
+.tarjeta-filtro::-webkit-scrollbar-thumb:hover {
+  background: var(--color-primario-hover);
+}
+
+/* NOTIFICACIONES */
+.notificacion-flotante {
+  position: fixed;
+  top: 20px;
+  right: 20px;
+  z-index: 9999;
+  min-width: 300px;
+  max-width: 400px;
+  animation: slideInRight 0.3s ease-out, fadeOut 0.3s ease-out 2.7s forwards;
+}
+
+.notificacion-contenido {
+  background: white;
+  border-radius: 10px;
+  box-shadow: 0 4px 15px rgba(0,0,0,0.15);
+  overflow: hidden;
+  border-left: 5px solid;
+}
+
+.notificacion-contenido.success { border-left-color: #28a745; }
+.notificacion-contenido.error { border-left-color: #dc3545; }
+.notificacion-contenido.info { border-left-color: #17a2b8; }
+
+.notificacion-icono {
+  width: 40px;
+  height: 40px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  font-size: 1.2rem;
+  color: white;
+  border-radius: 50%;
+  margin-right: 15px;
+}
+
+.notificacion-icono.success { background-color: #28a745; }
+.notificacion-icono.error { background-color: #dc3545; }
+.notificacion-icono.info { background-color: #17a2b8; }
+
+.notificacion-progreso {
+  height: 3px;
+  background: linear-gradient(90deg, transparent, currentColor);
+  animation: progressBar 3s linear forwards;
+}
+
+/* ANIMACIONES */
+@keyframes slideInRight {
+  from { transform: translateX(100%); opacity: 0; }
+  to { transform: translateX(0); opacity: 1; }
+}
+
+@keyframes fadeOut {
+  to { opacity: 0; }
+}
+
+@keyframes progressBar {
+  to { width: 0%; }
+}
+
+@keyframes ripple {
+  0% { width: 0; height: 0; opacity: 0.5; }
+  100% { width: 200px; height: 200px; opacity: 0; }
+}
+
+@keyframes spin {
+  to { transform: rotate(360deg); }
+}
+
+@keyframes bounce {
+  50% { transform: translateY(-10px); }
+}
+
+.tarjeta-producto.agregando {
+  animation: bounce 0.5s ease;
+}
+
+/* ESPACIADO */
+.d-flex.align-items-center {
+  gap: 25px;
+}
+
+/* INTERACTIVIDAD */
+a {
+  cursor: pointer;
+  display: block;
+  text-decoration: none;
+}
+
+.contenedor-imagen a:hover {
+  transform: scale(1.02);
+}
+
+.selector-talla,
+.boton-talla,
+.btn-anadir-carrito {
+  cursor: default !important;
+}
+
+.text-muted.small i {
+  font-size: 0.8rem;
+  margin-right: 3px;
+  color: #8A2BE2;
+}
+
+/* RESPONSIVE */
+@media (max-width: 768px) {
+  .titulo-principal { font-size: 2.2rem; }
+  .subtitulo-principal { font-size: 1rem; }
+  .buscador-catalogo .form-control { height: 45px; font-size: 0.9rem; }
+  .tarjeta-producto { margin-bottom: 1.5rem; }
+  .tarjeta-filtro { max-height: none; overflow-y: visible; }
+  .notificacion-flotante { left: 10px; right: 10px; min-width: auto; top: 10px; }
+  .etiqueta-retro,
+  .etiqueta-nuevo,
+  .etiqueta-fan,
+  .etiqueta-champions {
+    font-size: 0.65rem;
+    padding: 4px 8px;
+  }
+  .etiqueta-fan,
+  .etiqueta-champions { top: 40px; }
+  .btn-outline-primary.btn-sm {
+    padding: 0.25rem 0.5rem;
+    font-size: 0.875rem;
+  }
+}
+
+/* ICONOS */
+.bi-flag-fill {
+  font-size: 0.9rem;
+}

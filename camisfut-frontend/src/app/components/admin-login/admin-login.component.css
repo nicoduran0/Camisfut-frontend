@@ -1,0 +1,119 @@
+:root {
+  --admin-primary: #1a1a2e;
+  --admin-secondary: #16213e;
+  --admin-accent: #0f3460;
+  --admin-highlight: #00adb5;
+}
+
+.admin-login-container {
+  min-height: 100vh;
+  background: linear-gradient(135deg, var(--admin-primary) 0%, var(--admin-secondary) 100%);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  padding: 20px;
+}
+
+.admin-login-card {
+  background: white;
+  border-radius: 16px;
+  padding: 40px;
+  width: 100%;
+  max-width: 450px;
+  box-shadow: 0 20px 60px rgba(0, 0, 0, 0.3);
+}
+
+.admin-logo {
+  text-align: center;
+  margin-bottom: 30px;
+  padding-bottom: 20px;
+  border-bottom: 2px solid #f0f0f0;
+}
+
+.admin-logo h1 {
+  font-family: 'Bebas Neue', cursive;
+  font-size: 2rem;
+  color: var(--admin-primary);
+  margin-bottom: 5px;
+}
+
+.admin-logo p {
+  color: #6c757d;
+  font-size: 0.9rem;
+}
+
+.admin-form .form-label {
+  font-weight: 500;
+  color: #333;
+  margin-bottom: 8px;
+}
+
+.admin-form .form-control {
+  border: 2px solid #e0e0e0;
+  border-radius: 10px;
+  padding: 12px 15px;
+  font-size: 1rem;
+  transition: all 0.3s;
+}
+
+.admin-form .form-control:focus {
+  border-color: var(--admin-highlight);
+  box-shadow: 0 0 0 0.2rem rgba(0, 173, 181, 0.25);
+}
+
+.admin-form .form-text {
+  font-size: 0.85rem;
+  color: #666;
+  margin-top: 5px;
+}
+
+.btn-admin {
+  background: var(--admin-highlight);
+  border: none;
+  color: white;
+  font-weight: 600;
+  padding: 12px;
+  border-radius: 10px;
+  font-size: 1rem;
+  transition: all 0.3s;
+}
+
+.btn-admin:hover:not(:disabled) {
+  background: #00969c;
+  transform: translateY(-2px);
+  box-shadow: 0 5px 15px rgba(0, 173, 181, 0.3);
+}
+
+.btn-admin:disabled {
+  opacity: 0.7;
+  cursor: not-allowed;
+}
+
+.alert-danger {
+  background: #ffe6e6;
+  border: 2px solid #ff6b6b;
+  color: #d32f2f;
+  border-radius: 10px;
+  padding: 12px 15px;
+  margin-bottom: 20px;
+}
+
+.spin {
+  animation: spin 1s linear infinite;
+}
+
+@keyframes spin {
+  from { transform: rotate(0deg); }
+  to { transform: rotate(360deg); }
+}
+
+/* Responsive */
+@media (max-width: 576px) {
+  .admin-login-card {
+    padding: 30px 20px;
+  }
+
+  .admin-logo h1 {
+    font-size: 1.7rem;
+  }
+}

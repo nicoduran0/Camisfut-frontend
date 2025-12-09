@@ -1,0 +1,414 @@
+<!-- Navbar -->
+<nav class="navbar navbar-expand-lg navbar-light bg-white border-bottom barra-navegacion">
+  <div class="container d-flex align-items-center">
+    <a class="navbar-brand logo-navegacion" routerLink="/inicio">
+      <img src="img/logo_camis.png" alt="CamisFut">
+    </a>
+    <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#navbarNav">
+      <span class="navbar-toggler-icon"></span>
+    </button>
+    <div class="collapse navbar-collapse" id="navbarNav">
+      <ul class="navbar-nav me-auto">
+        <li class="nav-item"><a class="nav-link" routerLink="/inicio">Inicio</a></li>
+        <li class="nav-item"><a class="nav-link" routerLink="/catalogo">Catálogo</a></li>
+        <li class="nav-item"><a class="nav-link" routerLink="/colecciones">Colecciones</a></li>
+        <li class="nav-item"><a class="nav-link" routerLink="/nosotros">Nosotros</a></li>
+      </ul>
+      <div class="d-flex align-items-center">
+        <!-- Mostrar icono de perfil si está logueado -->
+        <div *ngIf="isLoggedIn" class="dropdown">
+          <button class="btn btn-outline-secondary d-flex align-items-center justify-content-center dropdown-toggle"
+                  style="height: 40px; width: 40px;"
+                  type="button"
+                  data-bs-toggle="dropdown"
+                  aria-expanded="false">
+            <i class="bi bi-person"></i>
+          </button>
+          <ul class="dropdown-menu dropdown-menu-end">
+            <li><span class="dropdown-item-text">Hola, {{userName}}</span></li>
+            <li><hr class="dropdown-divider"></li>
+            <li><a class="dropdown-item" routerLink="/mis-pedidos"><i class="bi bi-bag me-2"></i>Mis Pedidos</a></li>
+            <li>
+              <button class="dropdown-item text-danger" (click)="logout()">
+                <i class="bi bi-box-arrow-right me-2"></i>Cerrar Sesión
+              </button>
+            </li>
+          </ul>
+        </div>
+
+        <!-- Mostrar botón de inicio sesión si NO está logueado -->
+        <a *ngIf="!isLoggedIn" routerLink="/inicio-sesion" class="btn btn-inicio-sesion me-3">Iniciar Sesión</a>
+
+        <!-- Carrito (siempre visible) -->
+        <button class="btn btn-outline-secondary d-flex align-items-center justify-content-center position-relative"
+                style="height: 40px; width: 40px;"
+                routerLink="/carrito">
+          <i class="bi bi-cart"></i>
+          <span *ngIf="totalItemsCarrito > 0"
+                class="position-absolute top-0 start-100 translate-middle badge rounded-pill bg-danger"
+                style="font-size: 0.6rem;">
+            {{ totalItemsCarrito }}
+          </span>
+        </button>
+      </div>
+    </div>
+  </div>
+</nav>
+
+<!-- Modal de pago exitoso -->
+<div class="modal-overlay" *ngIf="pagoExitoso"></div>
+<div class="modal-confirmacion" *ngIf="pagoExitoso">
+  <div class="modal-contenido">
+    <div class="modal-icono">
+      <i class="bi bi-check-circle" style="color: #28a745;"></i>
+    </div>
+    <h3 class="modal-titulo" style="color: #28a745;">¡PAGO EXITOSO!</h3>
+    <p class="modal-mensaje">
+      Tu pedido ha sido procesado correctamente.
+      <strong>Nº de pedido: {{ 'CAM' + numeroPedido }}</strong>
+    </p>
+    <p class="modal-advertencia" style="border-left-color: #28a745;">
+      Te enviaremos un correo con los detalles del envío.
+      Redirigiendo a inicio en 3 segundos...
+    </p>
+    <div class="modal-botones">
+      <button class="btn btn-success" routerLink="/inicio">
+        <i class="bi bi-house me-2"></i> Ir al Inicio
+      </button>
+    </div>
+  </div>
+</div>
+
+<main class="container my-5">
+  <div class="text-center mb-5">
+    <h1 class="titulo-principal">PROCEDER AL PAGO</h1>
+    <p class="subtitulo-principal">Selecciona tu método de pago preferido</p>
+  </div>
+
+  <div class="row">
+    <!-- Resumen del pedido -->
+    <div class="col-lg-4 mb-4">
+      <div class="tarjeta-resumen sticky-top" style="top: 20px;">
+        <h5 class="mb-3">RESUMEN DEL PEDIDO</h5>
+
+        <div class="mb-3">
+          <h6>Productos ({{ totalItemsCarrito }})</h6>
+          <div class="productos-resumen">
+            <div *ngFor="let item of carritoItems" class="d-flex justify-content-between align-items-center mb-2 pb-2 border-bottom">
+              <div>
+                <small><strong>{{ item.nombre }}</strong></small><br>
+                <small class="text-muted">Talla: {{ item.talla }} | x{{ item.cantidad }}</small>
+              </div>
+              <small class="text-end">{{ (item.precio * item.cantidad).toFixed(2) }} €</small>
+            </div>
+          </div>
+        </div>
+
+        <div class="d-flex justify-content-between mb-2">
+          <span>Subtotal</span>
+          <strong>{{ subtotal.toFixed(2) }} €</strong>
+        </div>
+        <div class="d-flex justify-content-between mb-2">
+          <span>Envío</span>
+          <strong>{{ envio.toFixed(2) }} €</strong>
+        </div>
+        <hr>
+        <div class="d-flex justify-content-between mb-4">
+          <h5>TOTAL</h5>
+          <h5 class="text-success">{{ total.toFixed(2) }} €</h5>
+        </div>
+
+        <button class="btn btn-comprar" (click)="volverAlCarrito()">
+          <i class="bi bi-arrow-left me-2"></i> Volver al Carrito
+        </button>
+      </div>
+    </div>
+
+    <!-- Métodos de pago y formularios -->
+    <div class="col-lg-8">
+      <!-- Selección de método de pago - VERSIÓN COMPACTA -->
+      <div class="tarjeta-pago mb-4">
+        <div class="cabecera-pago">
+          <i class="bi bi-credit-card-2-front"></i>
+          <h4>Método de Pago</h4>
+        </div>
+
+        <div class="metodos-pago-compactos">
+          <!-- Tarjeta de crédito/débito -->
+          <div class="metodo-pago-compacto"
+               [class.active]="metodoPagoSeleccionado === 'tarjeta'"
+               (click)="seleccionarMetodoPago('tarjeta')">
+            <div class="metodo-pago-check">
+              <input class="form-check-input" type="radio" name="metodoPago"
+                     id="tarjeta" [checked]="metodoPagoSeleccionado === 'tarjeta'">
+            </div>
+            <div class="metodo-pago-icono">
+              <i class="bi bi-credit-card"></i>
+            </div>
+            <div class="metodo-pago-info">
+              <div class="metodo-pago-titulo">Tarjeta</div>
+              <div class="metodo-pago-subtitulo">Visa, MasterCard, Amex</div>
+            </div>
+          </div>
+
+          <!-- PayPal -->
+          <div class="metodo-pago-compacto"
+               [class.active]="metodoPagoSeleccionado === 'paypal'"
+               (click)="seleccionarMetodoPago('paypal')">
+            <div class="metodo-pago-check">
+              <input class="form-check-input" type="radio" name="metodoPago"
+                     id="paypal" [checked]="metodoPagoSeleccionado === 'paypal'">
+            </div>
+            <div class="metodo-pago-icono" style="color: #003087;">
+              <i class="bi bi-paypal"></i>
+            </div>
+            <div class="metodo-pago-info">
+              <div class="metodo-pago-titulo">PayPal</div>
+              <div class="metodo-pago-subtitulo">Pago rápido y seguro</div>
+            </div>
+          </div>
+
+          <!-- Apple Pay -->
+          <div class="metodo-pago-compacto"
+               [class.active]="metodoPagoSeleccionado === 'applepay'"
+               (click)="seleccionarMetodoPago('applepay')">
+            <div class="metodo-pago-check">
+              <input class="form-check-input" type="radio" name="metodoPago"
+                     id="applepay" [checked]="metodoPagoSeleccionado === 'applepay'">
+            </div>
+            <div class="metodo-pago-icono">
+              <i class="bi bi-apple"></i>
+            </div>
+            <div class="metodo-pago-info">
+              <div class="metodo-pago-titulo">Apple Pay</div>
+              <div class="metodo-pago-subtitulo">iPhone, Apple Watch</div>
+            </div>
+          </div>
+
+          <!-- Google Pay -->
+          <div class="metodo-pago-compacto"
+               [class.active]="metodoPagoSeleccionado === 'googlepay'"
+               (click)="seleccionarMetodoPago('googlepay')">
+            <div class="metodo-pago-check">
+              <input class="form-check-input" type="radio" name="metodoPago"
+                     id="googlepay" [checked]="metodoPagoSeleccionado === 'googlepay'">
+            </div>
+            <div class="metodo-pago-icono" style="color: #4285F4;">
+              <i class="bi bi-google"></i>
+            </div>
+            <div class="metodo-pago-info">
+              <div class="metodo-pago-titulo">Google Pay</div>
+              <div class="metodo-pago-subtitulo">Dispositivos Android</div>
+            </div>
+          </div>
+        </div>
+
+        <!-- Iconos de tarjetas (solo para método tarjeta) -->
+        <div class="tarjetas-iconos" *ngIf="metodoPagoSeleccionado === 'tarjeta'">
+          <small class="text-muted d-block mb-2">Aceptamos:</small>
+          <div class="d-flex gap-2 flex-wrap">
+            <span class="badge bg-light text-dark p-2"><i class="bi bi-credit-card me-1"></i> Visa</span>
+            <span class="badge bg-light text-dark p-2"><i class="bi bi-credit-card me-1"></i> MasterCard</span>
+            <span class="badge bg-light text-dark p-2"><i class="bi bi-credit-card me-1"></i> Amex</span>
+            <span class="badge bg-light text-dark p-2"><i class="bi bi-credit-card me-1"></i> Discover</span>
+          </div>
+        </div>
+      </div>
+
+      <!-- Datos de envío -->
+      <div class="tarjeta-pago mb-4">
+        <div class="cabecera-pago">
+          <i class="bi bi-truck"></i>
+          <h4>Datos de Envío</h4>
+        </div>
+        <form>
+          <div class="row mb-3">
+            <div class="col-md-6">
+              <label for="nombre" class="etiqueta-form">Nombre completo *</label>
+              <input type="text" class="form-control campo-form" id="nombre"
+                     [(ngModel)]="datosEnvio.nombre" name="nombre"
+                     placeholder="Tu nombre" required>
+            </div>
+            <div class="col-md-6">
+              <label for="telefono" class="etiqueta-form">Teléfono *</label>
+              <input type="tel" class="form-control campo-form" id="telefono"
+                     [(ngModel)]="datosEnvio.telefono" name="telefono"
+                     placeholder="+34 123 456 789" required>
+            </div>
+          </div>
+          <div class="mb-3">
+            <label for="direccion" class="etiqueta-form">Dirección *</label>
+            <input type="text" class="form-control campo-form" id="direccion"
+                   [(ngModel)]="datosEnvio.direccion" name="direccion"
+                   placeholder="Calle, número, piso" required>
+          </div>
+          <div class="row mb-3">
+            <div class="col-md-6">
+              <label for="ciudad" class="etiqueta-form">Ciudad *</label>
+              <input type="text" class="form-control campo-form" id="ciudad"
+                     [(ngModel)]="datosEnvio.ciudad" name="ciudad"
+                     placeholder="Tu ciudad" required>
+            </div>
+            <div class="col-md-6">
+              <label for="codigoPostal" class="etiqueta-form">Código Postal *</label>
+              <input type="text" class="form-control campo-form" id="codigoPostal"
+                     [(ngModel)]="datosEnvio.codigoPostal" name="codigoPostal"
+                     placeholder="28001" required>
+            </div>
+          </div>
+        </form>
+      </div>
+
+      <!-- Formulario de tarjeta (solo visible si se selecciona tarjeta) -->
+      <div class="tarjeta-pago mb-4" *ngIf="metodoPagoSeleccionado === 'tarjeta'">
+        <div class="cabecera-pago">
+          <i class="bi bi-credit-card"></i>
+          <h4>Datos de la Tarjeta</h4>
+        </div>
+        <form>
+          <div class="mb-3">
+            <label for="tarjeta" class="etiqueta-form">Número de tarjeta *</label>
+            <input type="text" class="form-control campo-form" id="tarjeta"
+                   [(ngModel)]="datosPago.tarjeta" name="tarjeta"
+                   (input)="formatTarjeta($event)"
+                   placeholder="1234 5678 9012 3456"
+                   maxlength="19" required>
+            <small class="text-muted">Formato: 16 dígitos con espacios</small>
+          </div>
+          <div class="mb-3">
+            <label for="nombreTitular" class="etiqueta-form">Nombre del titular *</label>
+            <input type="text" class="form-control campo-form" id="nombreTitular"
+                   [(ngModel)]="datosPago.nombreTitular" name="nombreTitular"
+                   placeholder="Como aparece en la tarjeta" required>
+          </div>
+          <div class="row mb-3">
+            <div class="col-md-6">
+              <label for="fechaVencimiento" class="etiqueta-form">Fecha de vencimiento *</label>
+              <input type="text" class="form-control campo-form" id="fechaVencimiento"
+                     [(ngModel)]="datosPago.fechaVencimiento" name="fechaVencimiento"
+                     (input)="formatFechaVencimiento($event)"
+                     placeholder="MM/AA" maxlength="5" required>
+            </div>
+            <div class="col-md-6">
+              <label for="cvv" class="etiqueta-form">CVV *</label>
+              <input type="password" class="form-control campo-form" id="cvv"
+                     [(ngModel)]="datosPago.cvv" name="cvv"
+                     placeholder="123" maxlength="3" required>
+              <small class="text-muted">Los 3 dígitos en el reverso de la tarjeta</small>
+            </div>
+          </div>
+        </form>
+      </div>
+
+      <!-- Mensaje para otros métodos de pago -->
+      <div class="tarjeta-pago mb-4" *ngIf="metodoPagoSeleccionado !== 'tarjeta' && metodoPagoSeleccionado !== null">
+        <div class="text-center p-4">
+          <i class="bi bi-lock" style="font-size: 2.5rem; color: var(--color-primario);"></i>
+          <h5 class="mt-3">Pago Seguro con {{ getNombreMetodoPago() }}</h5>
+          <p class="text-muted mb-3">
+            Serás redirigido a una plataforma segura de {{ getNombreMetodoPago() }}
+            para completar el pago. Tus datos bancarios estarán protegidos.
+          </p>
+          <div class="alert alert-info mt-3 mb-0">
+            <i class="bi bi-info-circle me-2"></i>
+            Al hacer clic en "Pagar", se abrirá la ventana de {{ getNombreMetodoPago() }}.
+          </div>
+        </div>
+      </div>
+
+      <!-- Términos y condiciones -->
+      <div class="tarjeta-pago mb-4">
+        <div class="form-check mb-3">
+          <input class="form-check-input" type="checkbox" id="terminos" [(ngModel)]="aceptaTerminos">
+          <label class="form-check-label" for="terminos">
+            Acepto los <a href="#" class="enlace-terminos">Términos y Condiciones</a> y
+            la <a href="#" class="enlace-terminos">Política de Privacidad</a> de CamisFut *
+          </label>
+        </div>
+        <div class="form-check mb-3">
+          <input class="form-check-input" type="checkbox" id="newsletter">
+          <label class="form-check-label" for="newsletter">
+            Deseo recibir ofertas y novedades por email
+          </label>
+        </div>
+      </div>
+
+      <!-- Botón finalizar compra -->
+      <div class="d-grid gap-2">
+        <button class="btn btn-pago-final" (click)="procesarPago()" [disabled]="loading || !aceptaTerminos || !metodoPagoSeleccionado">
+          <span *ngIf="!loading">
+            <i class="bi bi-lock me-2"></i>
+            <span *ngIf="metodoPagoSeleccionado === 'tarjeta'">PAGAR {{ total.toFixed(2) }} €</span>
+            <span *ngIf="metodoPagoSeleccionado !== 'tarjeta' && metodoPagoSeleccionado !== null">
+              PAGAR CON {{ getNombreMetodoPago().toUpperCase() }}
+            </span>
+            <span *ngIf="!metodoPagoSeleccionado">SELECCIONA UN MÉTODO DE PAGO</span>
+          </span>
+          <span *ngIf="loading">
+            <i class="bi bi-arrow-repeat spin me-2"></i> PROCESANDO PAGO...
+          </span>
+        </button>
+        <p class="text-center text-muted mt-2">
+          <i class="bi bi-shield-check"></i> Pago 100% seguro mediante encriptación SSL
+        </p>
+      </div>
+    </div>
+  </div>
+</main>
+
+<!-- Notificación flotante -->
+<div *ngIf="mostrarNotificacion" class="notificacion-flotante">
+  <div class="notificacion-contenido {{tipoNotificacion}}">
+    <div class="d-flex align-items-center p-3">
+      <div class="notificacion-icono {{tipoNotificacion}}">
+        <i *ngIf="tipoNotificacion === 'error'" class="bi bi-exclamation-circle"></i>
+        <i *ngIf="tipoNotificacion === 'success'" class="bi bi-check-circle"></i>
+        <i *ngIf="tipoNotificacion === 'info'" class="bi bi-info-circle"></i>
+      </div>
+      <div class="flex-grow-1">
+        <p class="mb-0">{{mensajeNotificacion}}</p>
+      </div>
+      <button class="btn btn-sm btn-link text-white" (click)="mostrarNotificacion = false">
+        <i class="bi bi-x"></i>
+      </button>
+    </div>
+    <div class="notificacion-progreso"></div>
+  </div>
+</div>
+
+<!-- Footer -->
+<footer class="pie-pagina">
+  <div class="container">
+    <div class="row">
+      <div class="col-md-3 mb-4">
+        <h5 class="titulo-pie">CAMISFUT</h5>
+        <p>Tu tienda de confianza para camisetas de fútbol nuevas y vintage.</p>
+      </div>
+      <div class="col-md-3 mb-4">
+        <h5 class="titulo-pie">Navegación</h5>
+        <ul class="list-unstyled">
+          <li><a routerLink="/inicio" class="enlace-pie">Inicio</a></li>
+          <li><a routerLink="/catalogo" class="enlace-pie">Catálogo</a></li>
+          <li><a routerLink="/colecciones" class="enlace-pie">Colecciones</a></li>
+          <li><a routerLink="/nosotros" class="enlace-pie">Nosotros</a></li>
+        </ul>
+      </div>
+      <div class="col-md-3 mb-4">
+        <h5 class="titulo-pie">Políticas</h5>
+        <ul class="list-unstyled">
+          <li><a class="enlace-pie">Envíos</a></li>
+          <li><a class="enlace-pie">Devoluciones</a></li>
+          <li><a class="enlace-pie">Privacidad</a></li>
+          <li><a class="enlace-pie">Términos y Condiciones</a></li>
+        </ul>
+      </div>
+      <div class="col-md-3 mb-4">
+        <h5 class="titulo-pie">Síguenos</h5>
+        <div class="iconos-redes">
+          <a href="#"><i class="bi bi-facebook"></i></a>
+          <a href="#"><i class="bi bi-instagram"></i></a>
+        </div>
+      </div>
+    </div>
+  </div>
+</footer>

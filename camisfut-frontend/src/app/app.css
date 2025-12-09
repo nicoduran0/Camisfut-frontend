@@ -1,0 +1,44 @@
+
+@import url('https://cdn.jsdelivr.net/npm/bootstrap-icons@1.11.0/font/bootstrap-icons.css');
+
+
+@import url('https://fonts.googleapis.com/css2?family=Bebas+Neue&display=swap');
+
+
+:root {
+  --color-primario: #8A2BE2;
+  --color-primario-hover: #7A22C2;
+  --color-secundario: #6c757d;
+  --color-exito: #28a745;
+  --color-peligro: #dc3545;
+}
+
+
+body {
+  font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+  background-color: #f8f9fa;
+}
+
+
+.cursor-pointer {
+  cursor: pointer;
+}
+
+.text-primary-custom {
+  color: var(--color-primario) !important;
+}
+
+.bg-primary-custom {
+  background-color: var(--color-primario) !important;
+}
+
+
+@media (max-width: 768px) {
+  .navbar-nav {
+    text-align: center;
+  }
+
+  .barra-navegacion {
+    padding: 0.5rem 1rem;
+  }
+}

@@ -1,0 +1,56 @@
+/* Importar Bootstrap */
+/* @import '~bootstrap/dist/css/bootstrap.min.css'; */
+
+/* Fuentes globales */
+body {
+  font-family: 'Inter', sans-serif;
+}
+
+.titulo-principal, .titulo-seccion, .titulo-pie {
+  font-family: 'Bebas Neue', cursive;
+}
+
+/* Variables CSS globales */
+:root {
+  --color-primario: #8A2BE2;
+  --color-primario-hover: #7A22C2;
+}
+
+/* ========================================= */
+/* ESPACIADO GLOBAL PARA NAVBAR EN TODAS LAS PÁGINAS */
+/* ========================================= */
+.navbar .d-flex.align-items-center {
+  gap: 25px;
+}
+
+.navbar .btn-inicio-sesion {
+  margin-right: 15px;
+}
+
+/* Color primario consistente en toda la app */
+:root {
+  --color-primario: #8A2BE2;
+  --color-primario-hover: #7A22C2;
+  --color-primario-light: rgba(138, 43, 226, 0.1);
+}
+
+.btn-primary {
+  background-color: var(--color-primario);
+  border-color: var(--color-primario);
+}
+
+.btn-primary:hover {
+  background-color: var(--color-primario-hover);
+  border-color: var(--color-primario-hover);
+}
+
+.btn-outline-primary {
+  color: var(--color-primario);
+  border-color: var(--color-primario);
+}
+
+.btn-outline-primary:hover {
+  background-color: var(--color-primario-light);
+  color: var(--color-primario-hover);
+  border-color: var(--color-primario-hover);
+}

@@ -1,0 +1,182 @@
+:root {
+  --color-primario: #8A2BE2;
+  --color-primario-hover: #7A22C2;
+}
+
+body {
+  font-family: 'Inter', sans-serif;
+  background-color: #e5e5e5;
+  color: #111;
+}
+
+h1, h2, h4 {
+  font-family: 'Bebas Neue', cursive;
+  text-transform: uppercase;
+}
+
+.tarjeta-coleccion {
+  height: 300px;
+  overflow: hidden;
+  border-radius: 8px;
+  position: relative;
+  border: none;
+  width: 100%;
+  padding: 0;
+  transition: transform 0.3s;
+  cursor: pointer;
+}
+
+.tarjeta-coleccion:hover {
+  transform: scale(1.03);
+}
+
+.tarjeta-coleccion img {
+  width: 100%;
+  height: 100%;
+  object-fit: cover;
+}
+
+.tarjeta-coleccion .card-img-overlay {
+  background: linear-gradient(180deg, transparent, rgba(0,0,0,0.7));
+  color: white;
+}
+
+.texto-coleccion {
+  position: relative;
+  z-index: 2;
+  font-size: 1.8rem;
+  font-weight: 600;
+  color: white;
+  text-shadow: 2px 2px 6px rgba(0,0,0,0.8);
+}
+
+.tarjeta-coleccion-extra {
+  height: 220px;
+  border-radius: 10px;
+  background-size: cover;
+  background-position: center;
+  position: relative;
+  flex: 1;
+  min-width: 220px;
+  color: white;
+  display: flex;
+  align-items: end;
+  justify-content: center;
+  text-align: center;
+  padding-bottom: 10px;
+  transition: transform 0.3s ease, box-shadow 0.3s ease;
+  font-family: 'Bebas Neue', cursive;
+  cursor: pointer;
+  border: none;
+}
+
+.tarjeta-coleccion-extra:hover {
+  transform: scale(1.02);
+  box-shadow: 0 6px 16px rgba(0,0,0,0.2);
+}
+
+.superposicion {
+  position: absolute;
+  inset: 0;
+  background: rgba(0,0,0,0.4);
+  border-radius: 10px;
+  z-index: 1;
+  transition: background 0.3s ease;
+}
+
+.tarjeta-coleccion-extra:hover .superposicion {
+  background: rgba(0,0,0,0.5);
+}
+
+.barra-navegacion {
+  padding: 0.75rem 1rem;
+  min-height: 70px;
+}
+.logo-navegacion img {
+  height: 70px;
+  width: auto;
+  margin-right: 15px;
+}
+.btn-inicio-sesion {
+  background-color: white;
+  border: 2px solid var(--color-primario);
+  color: var(--color-primario);
+  font-weight: bold;
+  padding: 8px 15px;
+  border-radius: 20px;
+  font-size: 0.9rem;
+  transition: all 0.2s;
+}
+.btn-inicio-sesion:hover {
+  background-color: #f8f9fa;
+  border-color: var(--color-primario-hover);
+  color: var(--color-primario-hover);
+}
+
+.pie-pagina {
+  background-color: #121212;
+  color: white;
+  padding: 40px 0;
+}
+.titulo-pie {
+  font-family: 'Bebas Neue', cursive;
+  font-size: 1.2rem;
+  font-weight: 900;
+  margin-bottom: 15px;
+  color: white;
+  text-shadow: -1px -1px 0 #000, 1px -1px 0 #000, -1px 1px 0 #000, 1px 1px 0 #000;
+}
+.enlace-pie {
+  color: #ccc;
+  text-decoration: none;
+}
+.enlace-pie:hover {
+  color: #fff;
+  text-decoration: underline;
+}
+.iconos-redes a {
+  color: #ccc;
+  font-size: 1.5rem;
+  margin-right: 15px;
+  transition: color 0.2s;
+}
+.iconos-redes a:hover {
+  color: #fff;
+}
+
+.d-flex.align-items-center {
+  gap: 25px;
+}
+
+
+.btn-inicio-sesion {
+  margin-right: 10px;
+}
+
+
+.dropdown-toggle::after {
+  display: none;
+}
+
+.dropdown-menu {
+  border: none;
+  box-shadow: 0 4px 12px rgba(0,0,0,0.1);
+  border-radius: 10px;
+  padding: 10px;
+}
+
+.dropdown-item {
+  border-radius: 5px;
+  padding: 8px 12px;
+  margin: 2px 0;
+  cursor: pointer;
+}
+
+.dropdown-item:hover {
+  background-color: #f8f9fa;
+}
+
+.dropdown-item-text {
+  font-weight: bold;
+  color: var(--color-primario);
+}
