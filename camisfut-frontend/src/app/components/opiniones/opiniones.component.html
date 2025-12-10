@@ -1,4 +1,4 @@
-<!-- Navbar -->
+<!-- Navbar COMPLETAMENTE CORREGIDO -->
 <nav class="navbar navbar-expand-lg navbar-light bg-white border-bottom barra-navegacion">
   <div class="container d-flex align-items-center">
     <a class="navbar-brand logo-navegacion" routerLink="/inicio">
@@ -40,11 +40,12 @@
         <!-- Mostrar botón de inicio sesión si NO está logueado -->
         <a *ngIf="!isLoggedIn" routerLink="/inicio-sesion" class="btn btn-inicio-sesion me-3">Iniciar Sesión</a>
 
-        <!-- Carrito -->
+        <!-- Carrito (siempre visible) - MODIFICADO CON BADGE -->
         <button class="btn btn-outline-secondary d-flex align-items-center justify-content-center position-relative"
                 style="height: 40px; width: 40px;"
                 routerLink="/carrito">
           <i class="bi bi-cart"></i>
+          <!-- BADGE CON CANTIDAD DE ITEMS - NUEVO -->
           <span *ngIf="totalItemsCarrito > 0"
                 class="position-absolute top-0 start-100 translate-middle badge rounded-pill bg-danger"
                 style="font-size: 0.6rem;">
@@ -56,135 +57,369 @@
   </div>
 </nav>
 
+<!-- Hero Opiniones -->
 <section class="seccion-hero-opiniones">
   <div class="container">
     <div class="text-center">
       <h1 class="titulo-principal">OPINIONES DE CLIENTES</h1>
       <p class="subtitulo-principal">Lo que nuestros clientes dicen sobre CamisFut</p>
+
+      <!-- Mostrar promedio general si hay valoraciones -->
+      <div *ngIf="valoraciones.length > 0" class="promedio-general mt-4">
+        <div class="promedio-estrellas mb-2">
+          <span class="estrellas-grandes">{{ generarEstrellasLlenas(redondearPromedio(promedioGeneral)) }}</span>
+          <span class="promedio-numero ms-2">{{ promedioGeneral }}/5</span>
+        </div>
+        <p class="promedio-texto mb-0">Basado en {{ valoraciones.length }} opinión{{ valoraciones.length !== 1 ? 'es' : '' }}</p>
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- Estadísticas de puntuaciones -->
+<section *ngIf="valoraciones.length > 0" class="container mt-5">
+  <div class="row">
+    <div class="col-md-8 mx-auto">
+      <div class="card estadisticas-card">
+        <div class="card-body">
+          <h5 class="card-title text-center mb-4">Distribución de puntuaciones</h5>
+          <div *ngFor="let estadistica of getEstadisticasPuntuaciones()" class="estadistica-item mb-3">
+            <div class="d-flex justify-content-between align-items-center mb-1">
+              <div class="d-flex align-items-center">
+                <span class="estadistica-estrellas me-2">{{ generarEstrellasLlenas(estadistica.puntuacion) }}</span>
+                <span class="estadistica-puntuacion">{{ estadistica.puntuacion }} estrellas</span>
+              </div>
+              <span class="estadistica-cantidad">{{ estadistica.cantidad }}</span>
+            </div>
+            <div class="progress" style="height: 8px;">
+              <div class="progress-bar bg-warning"
+                   [style.width.%]="estadistica.porcentaje"
+                   role="progressbar"
+                   [attr.aria-valuenow]="estadistica.porcentaje"
+                   aria-valuemin="0"
+                   aria-valuemax="100">
+              </div>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- Filtros de opiniones -->
+<section *ngIf="valoraciones.length > 0" class="container mt-4">
+  <div class="row">
+    <div class="col-12">
+      <div class="filtros-opiniones card">
+        <div class="card-body">
+          <div class="row align-items-center">
+            <div class="col-md-6 mb-3 mb-md-0">
+              <label class="form-label me-2 mb-0"><strong>Filtrar por:</strong></label>
+              <div class="btn-group" role="group">
+                <button type="button"
+                        class="btn btn-outline-secondary btn-sm"
+                        [class.active]="filtroPuntuacion === 0"
+                        (click)="cambiarFiltroPuntuacion(0)">
+                  Todas
+                </button>
+                <button type="button"
+                        class="btn btn-outline-secondary btn-sm"
+                        [class.active]="filtroPuntuacion === 5"
+                        (click)="cambiarFiltroPuntuacion(5)">
+                  5★
+                </button>
+                <button type="button"
+                        class="btn btn-outline-secondary btn-sm"
+                        [class.active]="filtroPuntuacion === 4"
+                        (click)="cambiarFiltroPuntuacion(4)">
+                  4★
+                </button>
+                <button type="button"
+                        class="btn btn-outline-secondary btn-sm"
+                        [class.active]="filtroPuntuacion === 3"
+                        (click)="cambiarFiltroPuntuacion(3)">
+                  3★
+                </button>
+                <button type="button"
+                        class="btn btn-outline-secondary btn-sm"
+                        [class.active]="filtroPuntuacion === 2"
+                        (click)="cambiarFiltroPuntuacion(2)">
+                  2★
+                </button>
+                <button type="button"
+                        class="btn btn-outline-secondary btn-sm"
+                        [class.active]="filtroPuntuacion === 1"
+                        (click)="cambiarFiltroPuntuacion(1)">
+                  1★
+                </button>
+              </div>
+            </div>
+            <div class="col-md-6">
+              <label class="form-label me-2 mb-0"><strong>Ordenar por:</strong></label>
+              <select class="form-select form-select-sm d-inline-block w-auto"
+                      [(ngModel)]="filtroOrden"
+                      (change)="cambiarOrden(filtroOrden)">
+                <option value="recientes">Más recientes</option>
+                <option value="antiguas">Más antiguas</option>
+                <option value="mejores">Mejores puntuaciones</option>
+                <option value="peores">Peores puntuaciones</option>
+              </select>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- Formulario para nueva opinión (solo usuarios logueados) -->
+<section *ngIf="isLoggedIn" class="container my-5">
+  <div class="card shadow-sm">
+    <div class="card-body p-4">
+      <div class="d-flex justify-content-between align-items-center mb-4">
+        <h3 class="card-title mb-0">
+          <i class="bi bi-pencil-square me-2"></i>
+          <span *ngIf="usuarioYaOpinio">Edita tu opinión</span>
+          <span *ngIf="!usuarioYaOpinio">Escribe tu opinión</span>
+        </h3>
+        <span *ngIf="usuarioYaOpinio" class="badge bg-info">
+          <i class="bi bi-info-circle me-1"></i>Ya has publicado una opinión
+        </span>
+      </div>
+
+      <!-- Mensajes de éxito/error -->
+      <div *ngIf="success" class="alert alert-success alert-dismissible fade show" role="alert">
+        <i class="bi bi-check-circle me-2"></i>{{ success }}
+        <button type="button" class="btn-close" (click)="success = ''"></button>
+      </div>
+
+      <div *ngIf="error" class="alert alert-danger alert-dismissible fade show" role="alert">
+        <i class="bi bi-exclamation-triangle me-2"></i>{{ error }}
+        <button type="button" class="btn-close" (click)="error = ''"></button>
+      </div>
+
+      <form (ngSubmit)="enviarValoracion()" #valoracionForm="ngForm">
+        <!-- Selector de puntuación -->
+        <div class="mb-4">
+          <label class="form-label fw-bold">Tu puntuación:</label>
+          <div class="rating-input">
+            <div class="estrellas-seleccion mb-2">
+              <button type="button"
+                      *ngFor="let star of [1,2,3,4,5]"
+                      class="btn-estrella"
+                      [class.active]="nuevaValoracion.puntuacion >= star"
+                      (click)="cambiarPuntuacion(star)">
+                <span class="estrella-icon">★</span>
+              </button>
+            </div>
+            <span class="puntuacion-texto">
+              <strong>{{ nuevaValoracion.puntuacion }} estrellas</strong>
+              <span class="ms-2 text-muted">({{ getDescripcionPuntuacion(nuevaValoracion.puntuacion) }})</span>
+            </span>
+          </div>
+        </div>
+
+        <!-- Comentario -->
+        <div class="mb-4">
+          <label for="comentario" class="form-label fw-bold">Tu comentario:</label>
+          <textarea
+            id="comentario"
+            class="form-control"
+            rows="4"
+            [placeholder]="usuarioYaOpinio ? 'Edita tu comentario sobre CamisFut...' : 'Comparte tu experiencia con CamisFut. ¿Qué te gustó? ¿Qué podríamos mejorar?'"
+            [(ngModel)]="nuevaValoracion.comentario"
+            name="comentario"
+            required
+            maxlength="500"
+            [disabled]="loading"></textarea>
+          <div class="form-text d-flex justify-content-between mt-1">
+            <span>Escribe al menos 10 caracteres</span>
+            <span [class.text-danger]="nuevaValoracion.comentario.length > 490">
+              {{ nuevaValoracion.comentario.length }}/500 caracteres
+            </span>
+          </div>
+        </div>
+
+        <!-- Botón enviar -->
+        <div class="d-flex justify-content-end">
+          <button
+            type="button"
+            class="btn btn-outline-secondary me-2"
+            (click)="resetForm()"
+            [disabled]="loading">
+            Cancelar
+          </button>
+          <button
+            type="submit"
+            class="btn btn-primary px-4"
+            [disabled]="!valoracionForm.form.valid || nuevaValoracion.comentario.length < 10 || loading">
+            <span *ngIf="loading" class="spinner-border spinner-border-sm me-2"></span>
+            <i *ngIf="!loading" class="bi bi-send me-2"></i>
+            {{ loading ? 'Publicando...' : (usuarioYaOpinio ? 'Actualizar Opinión' : 'Publicar Opinión') }}
+          </button>
+        </div>
+
+        <!-- Información adicional -->
+        <div class="alert alert-info mt-4 mb-0">
+          <i class="bi bi-info-circle me-2"></i>
+          <small>
+            <strong>Importante:</strong> Cada usuario puede publicar solo una opinión general.
+            Puedes editarla cuantas veces quieras.
+          </small>
+        </div>
+      </form>
+    </div>
+  </div>
+</section>
+
+<!-- Mensaje para usuarios no logueados -->
+<section *ngIf="!isLoggedIn" class="container my-5">
+  <div class="card bg-light border-0">
+    <div class="card-body text-center p-5">
+      <i class="bi bi-chat-quote-fill text-primary display-4 mb-3"></i>
+      <h4 class="card-title mb-3">¿Te gustaría compartir tu experiencia?</h4>
+      <p class="card-text mb-4">Inicia sesión para poder escribir tu opinión sobre nuestros productos y servicios.</p>
+      <a routerLink="/inicio-sesion" class="btn btn-primary btn-lg px-4">
+        <i class="bi bi-box-arrow-in-right me-2"></i>Iniciar Sesión
+      </a>
+      <p class="text-muted mt-3 mb-0">¿No tienes cuenta? <a routerLink="/registro" class="text-decoration-none">Regístrate aquí</a></p>
     </div>
   </div>
 </section>
 
 <!-- Todas las Opiniones -->
 <section class="container my-5">
+  <h2 class="text-center mb-4">Opiniones de nuestros clientes</h2>
+
+  <!-- Contador de opiniones -->
+  <div class="d-flex justify-content-between align-items-center mb-4">
+    <p class="mb-0">
+      <strong>{{ valoracionesFiltradas.length }}</strong>
+      opinión{{ valoracionesFiltradas.length !== 1 ? 'es' : '' }}
+      <span *ngIf="filtroPuntuacion > 0">
+        con {{ filtroPuntuacion }} estrellas
+      </span>
+    </p>
+    <div *ngIf="filtroPuntuacion > 0" class="text-end">
+      <button class="btn btn-sm btn-outline-secondary" (click)="cambiarFiltroPuntuacion(0)">
+        <i class="bi bi-x-lg me-1"></i>Quitar filtro
+      </button>
+    </div>
+  </div>
+
   <div class="row">
-    <!-- Opinión 1 -->
-    <div class="col-md-6 mb-4">
+    <!-- VALORACIONES DINÁMICAS DEL BACKEND -->
+    <div *ngFor="let valoracion of valoracionesFiltradas" class="col-md-6 mb-4">
       <div class="tarjeta-testimonio">
-        <div>
-          <div class="estrellas">★★★★★</div>
-          <p>"Excelente calidad en las camisetas de esta página. Mi último pedido fue rápido y en perfecto estado. La atención al cliente es increíble."</p>
+        <div class="d-flex justify-content-between align-items-start mb-3">
+          <div class="estrellas-opinion">
+            <span class="estrellas-listas">{{ generarEstrellasLlenas(valoracion.puntuacion) }}</span>
+            <span class="text-muted ms-2">({{ valoracion.puntuacion }}/5)</span>
+          </div>
+          <span class="badge bg-light text-dark">
+            <i class="bi bi-clock me-1"></i>{{ formatearFecha(valoracion.fechaCreacion) }}
+          </span>
         </div>
-        <div>
-          <div class="nombre-cliente">Carlos M.</div>
-          <div class="fecha-cliente">Hace 2 días</div>
+
+        <p class="comentario-texto mb-4">"{{ valoracion.comentario }}"</p>
+
+        <div class="d-flex justify-content-between align-items-center">
+          <div class="d-flex align-items-center">
+            <div class="avatar-usuario me-3">
+              <i class="bi bi-person-circle fs-4 text-primary"></i>
+            </div>
+            <div>
+              <div class="nombre-cliente">{{ valoracion.usuario?.nombre || 'Usuario' }}</div>
+              <div *ngIf="valoracion.producto && valoracion.producto.nombre" class="producto-opinion small text-muted">
+                <i class="bi bi-tag me-1"></i>{{ valoracion.producto.nombre }}
+              </div>
+            </div>
+          </div>
+
+          <!-- Verificación de compra (opcional) -->
+          <span class="verificacion-compra badge bg-success">
+            <i class="bi bi-check-circle me-1"></i>Compra verificada
+          </span>
         </div>
       </div>
     </div>
 
-    <!-- Opinión 2 -->
-    <div class="col-md-6 mb-4">
-      <div class="tarjeta-testimonio">
-        <div>
-          <div class="estrellas">★★★★★</div>
-          <p>"Envío rápido y producto tal como se describe. Muy contenta con mi camiseta de Argentina. La recomiendo 100%."</p>
-        </div>
-        <div>
-          <div class="nombre-cliente">Laura G.</div>
-          <div class="fecha-cliente">Hace 1 semana</div>
-        </div>
-      </div>
-    </div>
-
-    <!-- Opinión 3 -->
-    <div class="col-md-6 mb-4">
-      <div class="tarjeta-testimonio">
-        <div>
-          <div class="estrellas">★★★★★</div>
-          <p>"Gran variedad de camisetas. El servicio al cliente es excepcional, los que me atendieron fueron muy agradables conmigo. Volveré a comprar."</p>
-        </div>
-        <div>
-          <div class="nombre-cliente">Miguel R.</div>
-          <div class="fecha-cliente">Hace 2 semanas</div>
+    <!-- Si no hay valoraciones -->
+    <div *ngIf="valoraciones.length === 0 && !cargandoValoraciones" class="col-12">
+      <div class="card text-center py-5">
+        <div class="card-body">
+          <i class="bi bi-chat-quote display-4 text-muted mb-3"></i>
+          <h4 class="card-title mb-3">Aún no hay opiniones</h4>
+          <p class="card-text text-muted mb-4">Sé el primero en compartir tu experiencia con CamisFut.</p>
+          <div *ngIf="!isLoggedIn">
+            <a routerLink="/inicio-sesion" class="btn btn-primary">
+              <i class="bi bi-box-arrow-in-right me-2"></i>Inicia sesión para opinar
+            </a>
+          </div>
         </div>
       </div>
     </div>
 
-    <!-- Opinión 4 -->
-    <div class="col-md-6 mb-4">
-      <div class="tarjeta-testimonio">
-        <div>
-          <div class="estrellas">★★★★★</div>
-          <p>"Calidad y autenticidad garantizada. La camiseta del Real Madrid que compré es idéntica a la oficial. Muy recomendable."</p>
-        </div>
-        <div>
-          <div class="nombre-cliente">Ana P.</div>
-          <div class="fecha-cliente">Hace 3 semanas</div>
-        </div>
+    <!-- Si hay filtro activo pero no hay resultados -->
+    <div *ngIf="valoraciones.length > 0 && valoracionesFiltradas.length === 0" class="col-12">
+      <div class="alert alert-info text-center">
+        <i class="bi bi-info-circle me-2"></i>
+        No hay opiniones con {{ filtroPuntuacion }} estrellas.
+        <a href="javascript:void(0)" (click)="cambiarFiltroPuntuacion(0)" class="alert-link">Ver todas las opiniones</a>
       </div>
     </div>
 
-    <!-- Opinión 5 -->
-    <div class="col-md-6 mb-4">
-      <div class="tarjeta-testimonio">
-        <div>
-          <div class="estrellas">★★★★★</div>
-          <p>"Increíble servicio post-venta. Tuve un problema con una talla y me lo resolvieron inmediatamente. Profesionales."</p>
-        </div>
-        <div>
-          <div class="nombre-cliente">David L.</div>
-          <div class="fecha-cliente">Hace 1 mes</div>
-        </div>
+    <!-- Loading state -->
+    <div *ngIf="cargandoValoraciones" class="col-12 text-center py-5">
+      <div class="spinner-border text-primary" role="status" style="width: 3rem; height: 3rem;">
+        <span class="visually-hidden">Cargando...</span>
       </div>
+      <p class="mt-3">Cargando opiniones...</p>
     </div>
 
-    <!-- Opinión 6 -->
-    <div class="col-md-6 mb-4">
-      <div class="tarjeta-testimonio">
-        <div>
-          <div class="estrellas">★★★★★</div>
-          <p>"La camiseta vintage del Barça que compré es espectacular. Perfecta calidad y envío super rápido. ¡Gracias CamisFut!"</p>
+    <!-- OPINIONES DE EJEMPLO (solo si el backend falla o está vacío) -->
+    <div *ngIf="valoraciones.length === 0 && !cargandoValoraciones" class="col-12">
+      <h4 class="text-center mb-4">Algunas opiniones de ejemplo</h4>
+      <div class="row">
+        <!-- Opinión 1 (ejemplo) -->
+        <div class="col-md-6 mb-4">
+          <div class="tarjeta-testimonio">
+            <div>
+              <div class="estrellas">★★★★★</div>
+              <p>"Excelente calidad en las camisetas de esta página. Mi último pedido fue rápido y en perfecto estado. La atención al cliente es increíble."</p>
+            </div>
+            <div>
+              <div class="nombre-cliente">Carlos M.</div>
+              <div class="fecha-cliente">Hace 2 días</div>
+            </div>
+          </div>
         </div>
-        <div>
-          <div class="nombre-cliente">Sofia M.</div>
-          <div class="fecha-cliente">Hace 1 mes</div>
-        </div>
-      </div>
-    </div>
 
-    <!-- Opinión 7 -->
-    <div class="col-md-6 mb-4">
-      <div class="tarjeta-testimonio">
-        <div>
-          <div class="estrellas">★★★★★</div>
-          <p>"Pedí 3 camisetas diferentes y todas llegaron en perfecto estado. El embalaje era impecable. Muy satisfecho con la compra."</p>
-        </div>
-        <div>
-          <div class="nombre-cliente">Javier R.</div>
-          <div class="fecha-cliente">Hace 1 mes</div>
-        </div>
-      </div>
-    </div>
-
-    <!-- Opinión 8 -->
-    <div class="col-md-6 mb-4">
-      <div class="tarjeta-testimonio">
-        <div>
-          <div class="estrellas">★★★★★</div>
-          <p>"La mejor tienda online de camisetas de fútbol. Precios competitivos y calidad premium. Ya soy cliente habitual."</p>
-        </div>
-        <div>
-          <div class="nombre-cliente">Elena C.</div>
-          <div class="fecha-cliente">Hace 2 meses</div>
+        <!-- Opinión 2 (ejemplo) -->
+        <div class="col-md-6 mb-4">
+          <div class="tarjeta-testimonio">
+            <div>
+              <div class="estrellas">★★★★★</div>
+              <p>"Envío rápido y producto tal como se describe. Muy contenta con mi camiseta de Argentina. La recomiendo 100%."</p>
+            </div>
+            <div>
+              <div class="nombre-cliente">Laura G.</div>
+              <div class="fecha-cliente">Hace 1 semana</div>
+            </div>
+          </div>
         </div>
       </div>
     </div>
   </div>
 
-  <!-- Botón volver al inicio -->
-  <div class="text-center mt-4">
+  <!-- Botones de navegación -->
+  <div class="text-center mt-5">
+    <a routerLink="/catalogo" class="btn btn-outline-primary me-3">
+      <i class="bi bi-shop me-2"></i>Ver Catálogo
+    </a>
     <a routerLink="/inicio" class="btn btn-contorno-primario">
-      Volver al Inicio
+      <i class="bi bi-house me-2"></i>Volver al Inicio
     </a>
   </div>
 </section>

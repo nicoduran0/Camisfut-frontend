@@ -32,9 +32,6 @@
           <button class="btn btn-outline-light btn-sm" (click)="refrescarProductos()">
             <i class="bi bi-arrow-clockwise"></i> Actualizar
           </button>
-          <button class="btn btn-outline-light btn-sm" (click)="toggleHerramientas()">
-            <i class="bi bi-tools"></i> Herramientas
-          </button>
           <button class="btn btn-danger btn-sm" (click)="logout()">
             <i class="bi bi-box-arrow-right"></i> Salir
           </button>
@@ -42,37 +39,6 @@
       </div>
     </div>
   </header>
-
-  <!-- Herramientas avanzadas -->
-  <div *ngIf="mostrarHerramientas" class="admin-tools py-3 bg-dark text-white">
-    <div class="container">
-      <h5 class="mb-3"><i class="bi bi-tools me-2"></i>Herramientas Avanzadas</h5>
-      <div class="row g-3">
-        <div class="col-md-8">
-          <textarea class="form-control font-monospace"
-                    rows="4"
-                    [(ngModel)]="jsonExport"
-                    placeholder='Pega aquí el JSON de modificaciones...'></textarea>
-        </div>
-        <div class="col-md-4">
-          <div class="d-flex flex-column gap-2">
-            <button class="btn btn-outline-light" (click)="exportarModificaciones()">
-              <i class="bi bi-download me-2"></i> Exportar
-            </button>
-            <button class="btn btn-outline-light" (click)="importarModificaciones()">
-              <i class="bi bi-upload me-2"></i> Importar
-            </button>
-            <button class="btn btn-outline-warning" (click)="sincronizar()">
-              <i class="bi bi-cloud-arrow-up me-2"></i> Sincronizar
-            </button>
-            <button class="btn btn-outline-danger" (click)="limpiarModificaciones()">
-              <i class="bi bi-trash me-2"></i> Limpiar Modificaciones
-            </button>
-          </div>
-        </div>
-      </div>
-    </div>
-  </div>
 
   <!-- Estadísticas -->
   <section class="admin-stats py-4">
